@@ -11,7 +11,7 @@ The knowledge base is currently made up of the following categories:
 * [Go](go/): inspiring concepts and material related to the Go programming language.
 * [Learning](learning/): techniques, tips and resources related to learning, education and knowledge gathering.
 
-# Public domain
+## Public domain
 
 The source code and any original content of this repository is hereby released into the [public domain].
 
