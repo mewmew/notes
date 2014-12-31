@@ -1,0 +1,12 @@
+@font-face {
+  font-family: 'Mate SC';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Mate SC Regular'), local('MateSC-Regular'), url(../fonts.gstatic.com/s/matesc/v5/I5XqnZRc6OFZZn87UIu4Rg.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Pontano Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Pontano Sans'), local('PontanoSans-Regular'), url(../fonts.gstatic.com/s/pontanosans/v4/gTHiwyxi6S7iiHpqAoiE3InF5uFdDttMLvmWuJdhhgs.ttf) format('truetype');
+}

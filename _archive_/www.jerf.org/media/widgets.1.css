@@ -1,0 +1,149 @@
+/* Javascript Console CSS */
+.Console { 
+  background-color: white; 
+  border: 1px solid black;
+  padding-left: 2px;
+}
+
+.ConsoleOutput { 
+  white-space: -moz-pre-wrap;
+  color: black;
+  background: white;
+  margin: 0;
+}
+
+.ConsoleInputBox {
+  padding: 0;
+  border: none;
+  width: 100%;
+}
+
+.ConsoleError { 
+  color: red;
+}
+
+.ConsoleInput, .ConsoleInputBox {
+  color: blue;
+  background: white;
+  font: inherit;
+  font-weight: bold;
+  width: 100%;
+  margin-top: .5em;
+}
+
+.ConsoleTabComplete {
+  color: purple;
+}
+
+.ConsolePrint {
+  color: brown;
+}
+
+.ConsolePropList {
+  color: green;
+}
+
+.ConsoleMessage {
+  color: green;
+}
+
+.ConsoleHelpDisplay {
+  color: #8888FF;
+}
+
+.ConsoleHelp {
+  vertical-align: super;
+  font-size: x-small;
+}
+
+.ConsoleAccessKey {
+  font-size: smaller;
+  font-family: monospace;
+  color: #8888FF;
+}
+
+.ConsoleShellCommands {
+  border: 2px dashed #BBBBFF;
+  background-color: #EEEEFF;
+  margin-left: 1em;
+  margin-right: 1em;
+}
+
+/* jerf.org stuff */
+
+.replyText {
+  width: 98%;
+  height: 10em;
+}
+
+.commentReply, .preview {
+  margin-left: .5em;
+  margin-right: .5em;
+  margin-top: .4em;
+  padding-left: .5em;
+  padding-right: .5em;
+  padding-top: .25em;
+  background-color: #cdd4d4;
+  border-left: 2px ridge #cdd4d4;
+  border-right: 1px solid #c3c9c9;
+  border-top: .1em solid #afb5b5;
+  overflow: hidden;
+}
+
+.commentAdministrative {
+  border: .1em solid #c3c9c9;
+  background-color: #e5e595;
+  padding-left: .5em;
+  padding-right: .5em;
+  margin-right: -.7em;
+  font-size: small;
+}
+
+div.replyIndent {
+  margin-left: 1em;
+}
+div.replyIndent:hover {
+  border-left: .1em dotted #cccccc;
+  margin-left: .9em;
+  -moz-border-radius-bottomleft: .2em;
+}
+
+.preview {
+  background-color: #d4d4d4;
+}
+
+.replyControl:hover
+{
+
+}
+
+.replyControl {
+  font-size: smaller;
+}
+
+.previewArea, .postMessage {
+  font-style: normal;
+  text-align: left;
+  margin-right: auto;
+}
+
+.error {
+  color: red;
+  text-align: center;
+}
+
+.signon_required {
+  font-weight: bold;
+}
+
+.user_management {
+  text-align: center;
+}
+
+#id_summary, #id_content {
+  width: 100%;
+}
+
+#id_content {
+  height: 40em;
+}

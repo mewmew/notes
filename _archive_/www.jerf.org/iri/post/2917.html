@@ -1,0 +1,203 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+  <title>Sum Types in Go - iRi</title>
+  <link rel="stylesheet" type="text/css" href="../../media/jerf.1.css" title="Default Style" />
+  <link rel="stylesheet" type="text/css" href="../../media/widgets.1.css" />
+  <link rel="stylesheet" type="text/css" href="../../media/print.1.css" media="print"/>
+  <link rel="alternate stylesheet" type="text/css" href="../../media/print.1.css" title="Printer View"/>
+  <link href='../../../fonts.googleapis.com/css%3Ffamily=Pontano+Sans%257CMate+SC.css' rel='stylesheet' type='text/css'>
+  <link rel="alternate" type="application/rss+xml" title="iRi Post Feed" href="http://www.jerf.org/iri/feeds/comments/405" />
+</head>
+
+<body>
+<div id="main">
+
+<a name="P2901"></a>
+  <div class="NewsItemTitle">
+   Sum Types in Go
+</div>
+
+<div class="NewsItemBody">
+
+<p class="postdata"><nobr>posted Jun 02, 2013</nobr><br>
+in <a href="http://www.jerf.org/iri/categories/Programming/">Programming</a>, <a href="http://www.jerf.org/iri/categories/Golang/">Golang</a>, <a href="http://www.jerf.org/iri/categories/Haskell/">Haskell</a></p>
+
+
+
+
+
+
+<p>A couple of months back, I analyzed whether I wanted to propose switching to Go for work. I've still technically got the blog post with the results of that analysis in the pipeline (though who knows when I'll get it up), but there's a part of it that keeps coming up online, and I want to get this bit out faster. It's about whether <a href='http://golang.org/'>Go</a> has "sum types".</p>
+<a name="restOf2901"></a>
+<hr style="width: 75%; border-top: 1px dashed; border-bottom: 0px;
+           border-left:0px border-right: 0px" />
+
+<p>A sum type is a type in a language that can have multiple different kinds of values, which themselves may contain values of differing types.</p>
+
+<p>To put it in C terms, it is a "union" in a struct with an element that says which member of the union is currently the active element. In fact the <a href='https://en.wikipedia.org/wiki/Tagged_union'>Wikipedia page on the topic</a> lumps the two together. Different elements of the union may have significantly different memory sizes, so languages that make heavy use of this will not use a literal C union, but this gets the idea across.</p>
+
+<p> A classic example is an AST type that defines what a legal abstract syntax tree expression is, pulled from the <a href='http://en.wikibooks.org/wiki/Haskell/GADT'>Haskell GADT Wikibook page</a>:</p>
+
+<pre>data Expr a where
+   I   :: Int  -&gt; Expr Int
+   B   :: Bool -&gt; Expr Bool
+   Add :: Expr Int -&gt; Expr Int -&gt; Expr Int
+   Mul :: Expr Int -&gt; Expr Int -&gt; Expr Int
+   Eq  :: Expr Int -&gt; Expr Int -&gt; Expr Bool</pre>
+
+<p>This says that an expression may be an <tt>I</tt> for Int type, which then contains an Int value, or it may be a <tt>B</tt> that contains a Bool, or it may be an <tt>Add</tt> or <tt>Mul</tt> expression which itself may contain some expression of type Int, or an <tt>Eq</tt> expression. This is all recursive, so <tt>Mul (Add (I 3) (I 4)) (I 5)</tt>, the translation of <tt>(3 + 4) * 5</tt> in traditional infix syntax, is legal.</p>
+
+<p>Good languages support making it impossible to confuse the elements, so you have to "deconstruct" the sum type to do anything with it. Generally associated with a type like this you'll see a base set of functions that run the type through a case statement. Using the above, we can evaluate the expression with:</p>
+
+<pre>eval :: Expr a -&gt; a
+eval expr = case expr of
+                (I n) -&gt; n
+                (B b) -&gt; b
+                (Add e1 e2) -&gt; eval e1 + eval e2
+                (Mul e1 e2) -&gt; eval e1 * eval e2
+                (Eq  e1 e2) -&gt; eval e1 == eval e2</pre>
+
+<p>(I transformed the original into a case statement, for better parallels with Go.)</p>
+
+<p>Sum types are a great example of how learning a different language can expand your mind. If you've never used a language with good support for sum types, they sound worthless; after all, you've made it this far without ever needing explicit support, and you can bodge together something that works if you ever need to. But once you've become fluent in a language that heavily uses them, you'll never stop seeing places where you need them, and you'll miss them badly. Two places where sum types are particularly strong are the aforementioned AST example, and any sort of protocol, where a sum type can easily represent the legal messages that can be received, while excluding by construction any message that can not be received. When this is done, the type system itself helps you correctly handle errors at the outermost level, then pass the messages along to an inner layer that need no longer worry about such basic error handling. It's a good idea anyhow, and having the type system help enforce it is even better.</p>
+
+<p>AST types are presumably forever going to be a marginal case in Go. Nothing stops you from writing a compiler in Go, but it will never be a dominant use case for the language. Protocols, on the other hand, appear <i>everywhere</i>; every <tt>chan</tt> in Go defines a protocol. Often they are quite simple (<tt>chan bool</tt> can only be so complicated), but they can't all be that simple. A serious Go program will be steeped in protocols internally.</p>
+
+<p>But, alas, as is well known, Go does not contain union types. Except, as the <a href='http://golang.org/doc/faq#variant_types'>FAQ entry alludes to</a>, it sort of already does. But the FAQ is a faint allusion, and my Googling can't find anyone demonstrating what I consider the correct way (you can do <i>much</i> better than <tt>interface{}</tt>, which seems to be the current <i>de facto</i> standard), so let me show it to you. Let's translate that Expression type into Go.</p>
+
+<pre>package main
+
+import "fmt"
+
+// Rather than a "type", we declare an "interface" for the type
+type Expr interface {
+	isExpr()
+}
+
+// We can't define an implementation of isExpr on int directly, so
+// we wrap it
+type I int
+
+// And tag it as an "Expr". This function's only point is to do that.
+func (i I) isExpr() {}
+
+// And so on:
+type B bool
+func (b B) isExpr() {}
+
+type Add struct { left Expr; right Expr }
+func (a Add) isExpr() {}
+
+type Mul struct { left Expr; right Expr }
+func (m Mul) isExpr() {}
+
+type Eq struct { left Expr; right Expr }
+func (e Eq) isExpr() {}
+
+func eval (e Expr) (r Expr) {
+    switch exp := e.(type) {
+        case I: r = exp
+        case B: r = exp
+        case Add: r = I(eval(exp.left).(I) + eval(exp.right).(I))
+        case Mul: r = I(eval(exp.left).(I) * eval(exp.right).(I))
+        case Eq: r = B(eval(exp.left).(I) == eval(exp.right).(I))
+    }
+    return
+}
+
+func main () {
+    fmt.Println("4 + 5: ", eval(Add{I(4), I(5)}))
+    fmt.Println("(3 + 2) * 2: ", eval(Mul{Add{I(3), I(2)}, I(2)}))
+    // you'll never see this output:
+    fmt.Println("Runtime error: ", eval(Add{I(3), B(true)}))
+}</pre>
+
+<p>You can try that on the <a href='http://play.golang.org/p/sBrG1UfWs4'>Go Playground</a>, or if that is ever removed, paste that into a file and run with "go run". (I deliberately condensed the code for blog-readability, hit "Format" on the playground if you want to see the official formatting.)</p>
+
+<p>There are a couple of differences in the translation. eval can not return either a "true" int or a "true" bool (that is, values of the literal Go types <tt>int</tt> or <tt>bool</tt>), so we write it to return an <tt>Expr</tt> unconditionally. We've lost some type safety; Haskell would refuse to compile the third sample output, but Go does, and the type system doesn't prevent <tt>eval</tt> from returning an <tt>Add</tt>, so if we wish to verify that, we must do it by inspection. This is Go's <i>modus operandi</i>, though, so <i>shrug</i>. We do still have <i>some</i> type safety. You can't construct an <tt>Expr</tt> that is not one of those five things, nor can you accidentally stuff a String anywhere in there, as that will be caught at compile time, nor can you fail to unpack the <tt>I</tt> or <tt>B</tt> types out of the <tt>Expr</tt> before using them in most other code, which also turns out to be a very useful property. (It means you <i>must</i> explicitly unpack it, and handle any errors that occur at that time, immediately, which is good for writing robust code.) I say "most" because there are some implicit conversions, but it's much more sane and constrained than, say, Javascript.</p>
+
+<p>If your interface declares a lower-case <tt>is*</tt> function, no users of your package will be able to add to your sum type. I don't think you'd ever want to use this technique with a public tag function, because interfaces themselves cover the use case of wanting something publicly extendable.</p>
+
+<p>Of course, the tag interface is only used if you have no meaningful interface to define for your sum type. If you do have a real interface you can define you don't need a fake <tt>is*</tt> function, just define the interface. I have code that sends out an "Item" over a socket, where the Item is some component of the protocol in question (may be a list, hash, string, etc), and there's a real interface there, such as the function that takes the object and serializes it to an <tt>io.Writer</tt>, returns the size in bytes it will have, pretty-prints, etc. Using private names for the interface does ensure though that nobody else can accidentally create a new element in the protocol in another module. In concrete terms, if you <i>do</i> use an <tt>is*</tt> private method in your interface, as soon as you add any other private method you should just remove the <tt>is*</tt> one from the code.</p>
+
+<p>Another example I found I was using a lot was defining the following five elements:</p>
+
+<ul><li>An interface to declare a protocol type, with a private tag function.</li>
+<li>All the messages that could be sent on that protocol as one type each, as private types.</li>
+<li>An object that contained the data for the object, and a receiving control channel of the interface type defined above.</li>
+<li>This object contained public methods corresponding to the messages that could be sent, which constructed the relevant structs, sent them on the control channel, and if there was to be a return value, handled creating the return channel and returning the resulting value. If the control channel can be closed, this should also handle that case.</li>
+<li>A goroutine that consisted entirely of an endless <tt>for{}</tt> loop with a switch statement switching on the request coming in, and a defer statement that guarantees we close the control channel if this scope gets exited in any way. More sophisticated protocols could replace the switch with a state machine, though I never needed one.</li></ul>
+
+<p>The end result of this is a goroutine acting as a server, providing easy, mediated access to whatever resource it was controlling, with an extremely easy-to-use external object for talking to it, which at the same time successfully sealing away the details of the <tt>chan</tt>'s protocol to the inside of the implementing module.</p>
+
+<p>The downside of this approach is that it is awfully verbose for what it is accomplishing, and Go provides no mechanisms for factoring this pattern away. You must declare a tag interface, a type per message, an empty implementation of the tag interface per message, a method per message to send the command (themselves rather redundant, repeatedly copying the function params into a struct, creating the return channels, etc), and then a case statement per message type in the core implementation loop. That's a lot of repetitions of the phrase "per message". But it seemed to be a pretty solid pattern in Go, and this really is a great way to safely create a non-trivial protocol that is easy-to-use for using code.</p>
+
+<p>(I've fiddled a bit with using the <tt>go</tt> language packages to auto-generate this sort of code. It should be possible, though I'm having some trouble with correctly embedding comments at the moment.)</p>
+
+<p>You also have no compiler support for detecting that you missed a case. Again, Go's <i>m.o.</i>, so <i>shrug</i>.</p>
+
+<p>So, Go may not "have sum types" but they can easily be implemented in Go, right? I don't know. No two computer languages ever seem to be able to precisely agree on what any two terms mean. Obviously what we have here is not a "Haskell sum type", but this may be the Go-e-ist "sum type" thing you could hope for, within the context of its type system. (Most Go-ic? Maximally Go-ful? What's Go's equivalent to "Pythonic"?) It's certainly stronger than <tt>interface{}</tt>. <a href='https://groups.google.com/d/msg/golang-nuts/0bcyZaL3T8E/eL4r3VFKkR8J'>Interfaces and sum types conflict</a> because the language already has constructs that do this, and it's always a problem when a language has two constructs trying to do almost-but-not-quite the same thing. I think this covers the major use cases of sum types, and if it doesn't cover all the possible academic variants, that seems in keeping with Go's philosophy.</p>
+
+<p>Given that this is possible, I consider <tt>interface{}</tt> to be a code smell, unless it is being used to indicate a function that <i>truly</i> takes anything. If you have a function that takes <tt>interface{}</tt> and the first thing it does is assert that the input is one of a small number of types and panic if it isn't, it should probably be using this pattern. (A possible exception can be made for things like <tt>int</tt>, but even then I prefer defining type aliases for things as much as possible, so the type system is as helpful as possible.)</p>
+
+<p>Without having any particular ideas on what the solutions may be, though, some sort of way of indicating to godoc that this is a sum type construct would be helpful. The resulting godoc you get today is not very helpful. Also, some way of addressing the boilerplate of the sum-type-protocol description above would be helpful; it is sufficiently verbose that it will tend to inhibit people from using it, even though it's a fairly robust solution. But perhaps that's just an IDE problem.</p>
+
+</div>
+
+
+
+</div>
+
+<div class="ToolBox">
+  <div class="LogoWrap">
+    <div class="Logo">
+      <a href="http://www.jerf.org/iri" style="text-decoration: none; color: inherit">iRi</a>
+      </div>
+    </div>
+
+  
+
+  <p class="Seperator">&nbsp;</p>
+
+  <div class="ToolBoxTitle">Site Links</div><div class="ToolBoxContent">
+    <div class="sidebarLink"><a href="http://www.jerf.org/iri/post/2909">About the Author</a></div>
+    <div class="sidebarLink"><a href="http://www.jerf.org/iri/2007/03/14/2526.html">About iRi</a></div>
+    <div class="sidebarLink"><a href="http://www.jerf.org/iri/post_index">All iRi Posts</a></div>
+    <div class="sidebarLink"><a href="http://www.jerf.org/iri/blogbook">iRi Blog Books</a></div>
+    <div class="sidebarLink"><a href="http://www.jerf.org/iri/blogbook/communication_ethics">BlogBook: Communication Ethics</a></div>
+</div>
+
+  <p class="Seperator">&nbsp;</p>
+
+  <div class="ToolBoxTitle">RSS</div>
+  <div class="ToolBoxContent">
+    <a class='feedlink' href='http://www.jerf.org/iri/rss.xml'>All Posts <img src='../../images/feed-icon-14x14.png' alt='' style='border: 0; margin-right: .2em'></a><br />
+    
+    
+    </div>
+<p class="Seperator">&nbsp;</p>
+
+<div class="ToolBoxTitle">Blogroll</div><div class="ToolBoxContent">
+    <div class="sidebarLink"><a href="http://heather.jerf.org/">Bowers' Family Blog</a></div>
+    <div class="sidebarLink"><a href="http://www.dangerousmeta.com/">dangerousmeta</a></div>
+    <div class="sidebarLink"><a href="http://chizumatic.mee.nu/">Chizumatic</a></div>
+    <div class="sidebarLink"><a href="http://www.shamusyoung.com/twentysidedtale/">Twenty Sided</a></div>
+    <div class="sidebarLink"><a href="http://www.classicalvalues.com/">Classical Values</a></div>
+    <div class="sidebarLink"><a href="http://wmf.editthispage.com/">Hack the Planet</a></div>
+    <div class="sidebarLink"><a href="http://programming.reddit.com/">programming on reddit</a></div>
+</div>
+
+
+
+</div>
+<script src="../../../www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-532932-1";
+urchinTracker();
+</script>
+</body>
+</html>

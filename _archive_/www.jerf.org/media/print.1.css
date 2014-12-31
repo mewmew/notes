@@ -1,0 +1,99 @@
+#main {
+  width: 100%;
+  left: 0%;
+  position: relative;
+  background-color: #FFFFFF;
+  border: 0;
+}
+
+body {
+  background-color: #FFFFFF;
+  font-family: Georgia, Century Schoolbook, serif;
+}
+
+.noprint, .ToolBox, .postdata {
+  display: none;
+}
+
+.onlyprint {
+  display: inherit;
+}
+
+.StoryTitle {
+  font-family: Utopia, Arial, sans;
+  font-size: 240%;
+  text-align: center;
+  border: 0;
+}
+
+.NewsItemTitle {
+  font-family: Utopia, Arial, sans;
+  font-size: 200%;
+  text-align: center;
+  border-bottom: 1px solid #000000;
+}
+
+.NewsItemBody {
+  border: 0;
+}
+
+h2, div.StorySubsection {
+  font-family: Utopia, Arial, sans;
+  margin-top: 2.5em;
+  font-size: 160%;
+  border: 0;
+}
+
+h3, div.StorySubSubsection {
+  font-family: Utopia, Arial, sans;
+  font-style: italic;
+  font-size: 110%;
+  margin-top: 2.5em;
+  border-bottom: 1px solid #000000;
+}
+
+blockquote, .quoted {
+  padding: .25em;
+  font-family: Times;
+  border: 1px dotted #000000;
+}
+
+.Copyright {
+  text-align: center;
+  font-size: smaller;
+}
+.CopyrightLink, .Copyright a {
+  text-decoration: none;
+}
+
+pre {
+  padding: .25em;
+  margin-bottom: 2em;
+  border-left: 2px solid #000000;
+  border-right: 2px ridge #000000;
+}
+
+div.sidebar_right {
+  float: right
+}
+
+div.sidebar_left {
+  float: left
+}
+
+div.sidebar_left, div.sidebar_right {
+  width: 35%;
+  max-height: none;
+  font-size: smaller;
+  border: .1em solid black;
+}
+
+.sidebar_left:before, .sidebar_right:before: {
+  display: none !important
+  content: "" !important;
+  border-bottom: none !important;
+}
+
+.comments {
+  display: none
+}
