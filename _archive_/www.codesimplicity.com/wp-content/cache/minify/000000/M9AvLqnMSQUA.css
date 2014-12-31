@@ -1,0 +1,34 @@
+html{border-top:17px solid #f0f0f0}body{font-family:'Open Sans',sans-serif;font-size:11.5pt;margin:0
+2em 1em 2em}h1,h2.entry-title{color:#36a}h1{font-size:300%;font-family:'Oxygen',sans-serif;font-weight:normal;margin: .3em 0}a
+img{border:none}a:link{color:#26a}a:hover{color:#b75449 !important}#menu a, #twitterheader a, h1 a, h2
+a{text-decoration:none}h1 a:link, h1 a:visited, h2 a:link, h2 a:visited{color:inherit}#menu a:visited, #twitterheader a:visited{color:#26a}dt{font-weight:bold;margin-bottom: .4em}dd{margin-bottom:1em}input[type=submit]{color:#333}#content{max-width:61em}#leftcontent{max-width:50em}#rightcontent{max-width:20em;float:right;padding-left:2em}#menu{font-size:110%;list-style-type:none;margin:0;padding:0;display:table;width:auto}#menu li:first-child a:link{border-top:1px dotted gray}#menu
+li{border-left-width:7px;border-left-style:solid}#menu
+li.book{border-left-color:#b60311}#menu
+li.blog{border-left-color:#0583f2}#menu
+li.about{border-left-color:#f5da13}#menu
+li.speaking{border-left-color:#038c0c}#menu
+li.subscribe{border-left-color:#f28705}#menu
+a{display:block;padding: .25em;border-bottom:1px dotted gray}#menu a:hover{background-color:#f8f8f8}#twitter{margin-top:1em}#twitterheader{font-size:large;margin-bottom: .5em}#twitterheader .twitter-follow-button{margin-left: .3em;margin-bottom:-2px}#tweets{margin:0;padding:0;list-style-type:none;font-size:small;color:black;background-color:white}#tweets
+li{border-top:1px dotted gray;padding: .5em;margin-bottom: .5em}#tweets
+.tweetlinkcontainer{font-size:85%;text-align:right;margin-top: .25em;margin-right:1em;margin-bottom: .5em}#tweets
+.retweet{float:left;vertical-align:top}#tweets .retweet:before{content:url("../../../themes/codesimplicity/retweet.png")}#tweets .retweet:hover:before{content:url("../../../themes/codesimplicity/retweet_hover.png")}.entry-header{border-top:1px dotted gray;padding-top: .5em;margin-right:1em}.hentry:first-child .entry-header{max-width:40em}h2.entry-title{margin:0}.entry-meta{float:right;margin-top: .6em;font-style:italic;font-size:small}.post{margin-bottom:2em}.commentlist{list-style:none;margin:0;padding:0}.commentlist
+li.comment{border-bottom:1px solid #e7e7e7;position:relative;margin-bottom:1em;padding-left:56px}.commentlist li:last-child{border-bottom:none}.commentlist
+ol{list-style:decimal}.commentlist
+.avatar{position:absolute;top:4px;left:0}.comment-author
+cite{font-style:normal;font-weight:bold}.comment-author
+.says{font-style:italic}.comment-meta{font-size:12px;margin-bottom:1em}.comment-meta a:link,
+.comment-meta a:visited{color:#888;text-decoration:none}.reply{font-size:small;padding-bottom:1em}.commentlist
+.children{list-style:none;margin:0;padding:0}.commentlist .children
+li{border:none;margin:0}.nopassword,.nocomments{display:none}#comments
+.pingback{border-bottom:1px solid gray;margin-bottom:18px;padding-bottom:18px}.commentlist li.comment+li.pingback{margin-top:-6px}#comments .pingback
+p{color:#888;display:block;font-size:12px;line-height:18px;margin:0}#comments .pingback
+.url{font-size:13px;font-style:italic}#respond{border-top:1px solid #e7e7e7;margin:1em
+0;overflow:hidden;position:relative}#respond
+p{margin:0}#respond .comment-notes{margin-bottom:1em}.children
+#respond{margin:0
+48px 0 0}#comments-list ul
+#respond{margin:0}#cancel-comment-reply-link{font-size:12px;font-weight:normal}#respond
+.required{color:#ff4b33;font-weight:bold}#respond
+label{color:#888;font-size:12px}#respond input[type=text]{margin:0
+0 9px;display:block;max-width:35em}#respond input[type=submit]{width:auto}#respond .form-submit{text-align:right;margin-right: .6em}#respond
+textarea{width:98%}#respond .form-allowed-tags{color:#888;font-size:small;line-height:18px}#nav-below{border-top:1px dotted gray;padding-top: .5em;font-size:135%;margin-bottom:3em}#nav-below .nav-previous{float:left}#nav-below .nav-next{float:right}.copy2{clear:left}#bookcover{float:left;margin-right:1em;margin-bottom:1em}

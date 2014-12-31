@@ -1,0 +1,6 @@
+# Used for Google app indexing. See https://developers.google.com/app-indexing/webmasters/server
+User-agent: Googlebot
+Disallow:
+
+User-agent: *
+Disallow: /
