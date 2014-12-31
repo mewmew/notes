@@ -10,6 +10,7 @@ The knowledge base is currently made up of the following categories:
 
 * [Go](go/): inspiring concepts and material related to the Go programming language.
 * [Learning](learning/): techniques, tips and resources related to learning, education and knowledge gathering.
+* [Privacy](privacy/): ideas related to privacy and personal integrity.
 
 ## Public domain
 
