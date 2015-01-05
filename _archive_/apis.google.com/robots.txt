@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /_/scs/
+Allow: /_/apps-static/
+Allow: /_/widget/render/
+Allow: /_/im/_widget/render/
+Allow: /_/explore
+Allow: /_/initialdata
+Allow: /_/socialgraph/lookup/hovercards
+Disallow: /_/
