@@ -4,8 +4,14 @@ This project is part of an overall aim to simplify my life as I believe this wil
 
 A breakdown of tasks follows:
 
-* [ ] Remove Facebook account
-* [ ] Reduce the number of e-mail accounts
-* [ ] Automate mundate tasks
-    - [ ] Bills
-    - [ ] cron
+* [ ] Remove Facebook account.
+* [ ] Reduce the number of e-mail accounts.
+    - [ ] Migrate treasured e-mails from the old accounts and remove the rest.
+* [ ] Identify key online services and remove the rest.
+* [ ] Automate mundane tasks.
+    - [ ] Pay bills.
+    - [ ] Take backups of irreplaceable data, projects, pictures, contacts and e-mails.
+    - [ ] Sign in to pages with virtual queues.
+    - [ ] Update passwords.
+* [ ] Categorize files as either replaceable or irreplaceable.
+    - [ ] Upload a copy of privacy insensitive irreplaceable files.
