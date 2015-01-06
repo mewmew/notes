@@ -14,6 +14,12 @@ The knowledge base is currently made up of the following categories:
 * [Security](security/): fundamental concepts in computer security (for fun and profit).
 * [Simplicity](simplicity/): methods for simplifying life to a minimal core of happiness.
 
+## Projects
+
+[Inspired](http://uppdrag.vaert.se/) by my brother [Henry](https://github.com/karlek) I'll take upon a series of projects meant to challenge my world views, put me out of my comfort zone, help me learn more about myself and make changes to improve my quality of life.
+
+* [Project Cleanup](projects/#project-cleanup): a general cleanup of my life and digital experience.
+
 ## Public domain
 
 The source code and any original content of this repository is hereby released into the [public domain].
