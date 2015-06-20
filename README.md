@@ -9,6 +9,7 @@ Like [others before me](http://www.acuriousmix.com/2014/09/03/designing-a-person
 The knowledge base is currently made up of the following categories:
 
 * [Compilers](compilers/): brilliant articles, slides and papers related to compiler theory.
+* [Concurrency](concurrency/): extracts which communicate the *aha* feeling of how to make things concurrent.
 * [Go](go/): inspiring concepts and material related to the Go programming language.
 * [Learning](learning/): techniques, tips and resources related to learning, education and knowledge gathering.
 * [Privacy](privacy/): ideas related to privacy and personal integrity.

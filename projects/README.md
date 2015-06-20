@@ -1,6 +1,6 @@
 # Project Cleanup
 
-This project is part of an overall aim to simplify my life as I believe this will help me get closer to the core of what makes me truly happy. Practically it focuses on getting rid of distractions through a general cleanup of my life and digital experience.
+This project is part of an overall aim to simplify my life as I believe this will help me get closer to the core of what makes me truly happy. Practically, it focuses on getting rid of distractions through a general cleanup of my life and digital experience.
 
 A breakdown of tasks follows:
 
@@ -19,6 +19,8 @@ A breakdown of tasks follows:
 # Project Disconnect
 
 Technology has the potential to connect us, yet I've never felt more disconnected. This project aims to re-connect me with life and the people I truly care about.
+
+A breakdown of tasks follows:
 
 * [x] Use mobile phone at most once per week (*started 2015-05-27*).
 * [ ] One day per week without using a computer.
