@@ -1,0 +1,5 @@
+# Nobody should index thel testbed directory structure (30-Nov-96 /ACK)
+
+User-agent: *
+Disallow: /~testbed
+Disallow: /~jure/pub
