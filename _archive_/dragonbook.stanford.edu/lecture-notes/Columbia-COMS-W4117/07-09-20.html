@@ -1,0 +1,135 @@
+<html><head><title>Lecture 6: September 20, 2007</title></head><body>
+ <h1>COMS W4117<br>
+  Compilers and Translators:<br>
+  Software Verification Tools<br>
+  Lecture 6: Foundations of Data-Flow Analysis<br>
+  September 20, 2007
+ </h1>
+
+ <h2>Lecture Outline</h2>
+ <ol>
+  <li>Review</li>
+  <li>Available expressions</li>
+  <li>Basic questions about the iterative algorithm</li>
+  <li>Lattices and semilattices</li>
+  <li>Transfer functions</li>
+  <li>The iterative algorithm for general frameworks</li>
+  <li>Meaning of a data-flow solution</li>
+  <li>Reading</li>
+ </ol>
+ <br><br>
+
+ <h2>1. Review</h2>
+ <ol>
+  <li>Introduction to data-flow analysis</li>
+  <li>Data-flow schemas</li>
+  <li>Reaching definitions</li>
+  <li>Live-variable analysis</li>
+
+ </ol>
+ <br><br>
+  
+ <h2>2. Available Expressions</h2>
+ <ul>
+  <li>Available expressions is a forward data-flow analysis problem similar to reaching definitions.</li>
+  <li>We say an expression x + y is <i>available</i> at a point p in a flow graph if every path
+      from ENTRY to p evaluates x + y and between the last such evaluation and p there are no
+      assignments tox or y.</li>
+  <li>A block kills x + y if it assigns x or y and does not subsequently recompute x + y.</li>
+  <li>A block generates x + y if it evaluates x + y and does not subsequently define x or y.</li>
+  <li>We can compute the set of generated expressions for each point in a block working
+      from the beginning of the block to the end.</li>
+  <li>Transfer equations and control-flow equations for available expressions: pp. 610-614.</li>
+  <li>Iterative algorithm for available expressions: Alg. 9.17, p. 614.</li>
+ </ul>
+ <br><br>
+
+ <h2>3. Basic Questions about the Iterative Algorithm</h2>
+ <ul>
+  <li>Basic questions</li>
+  <ul>
+   <li>When is the iterative algorithm correct?</li>
+   <li>How precise is the solution?</li>
+   <li>Under what conditions does the iterative algorithm converge?</li>
+   <li>What is the meaning of the solution to the data-flow equations?</li>
+  </ul>
+ </ul>
+ <br><br>
+
+ <h2>4. Lattices and Semilattices</h2>
+ <ul>
+  <li>The following definitions are fundamental (Sect. 9.3.1, pp. 618-623).</li>
+  <ul>
+   <li>Lattice vs. semilattice.</li>
+   <li>Partial order defined by the meet operator of a semilattice.</li>
+   <li>Greatest lower bound, least upper bound.</li>
+   <li>Maximum fixed point.</li>
+   <li>Lattice diagram (c.f., DAG, Hasse diagram).</li>
+   <li>Product lattices.</li>
+   <li>Height of a lattice.</li>
+  </ul>
+ </ul>
+ <br><br>
+
+ <h2>5. Data-Flow Analysis Frameworks</h2>
+ <ul>
+  <li>Definition of a data-flow analysis framework.</li>
+  <li>Transfer functions.</li>
+  <li>Monotone frameworks.</li>
+  <li>Distributive frameworks.</li>
+ </ul>
+ <br><br>
+
+
+ <h2>6. The Iterative Algorithm for General Frameworks</h2>
+ <ul>
+  <li>The iterative algorithm takes as input:</li>
+  <ul>
+   <li>A data-flow graph with an ENTRY and EXIT node.</li>
+   <li>A direction, forward or backward.</li>
+   <li>A set of values V for IN and OUT.</li>
+   <li>A meet operator &and; on V such that (V, &and;) forms a semilattice.</li>
+   <li>A set of transfer functions for the blocks of the data-flow graph.</li>
+   <li>A constant value for the boundary condition.</li>
+  </ul>
+  <li>The iterative algorithm produces as output the sets IN[B] and OUT[B]
+      for each block B in the data-flow graph.</li>
+  <li>The algorithm is given in Fig. 9.23, p. 627.</li>
+  <li>Important properties of the algorithm:</li>
+  <ul>
+   <li>If the algorithm converges, the result is a solution to the data-flow equations.</li>
+   <li>If the framework is monotone, the solution is the MFP of the data-flow equations.</li>
+   <li>If the semilattice of the framework is monotone and of finite height, the
+       algorithm is guaranteed to converge.</li>
+  </ul>
+ </ul>
+ <br><br>
+
+ <h2>7. Meaning of a Data-Flow Solution</h2>
+ <ul>
+  <li>For a forward data-flow framework, the IDEAL[B] solution for a block B is the meet over all
+      feasible paths P of f<sub>P</sub>(v<sub>ENTRY</sub>).</li>
+  <ul>
+   <li>Any answer greater than IDEAL is incorrect.</li>
+   <li>Any answer smaller than or equal to IDEAL is safe.</li>
+  </ul>
+  <li>MOP[B], the meet over all paths solution, assumes that every path in the data-flow graph
+      can be taken, but some of these paths may not be feasible. 
+      Thus, MOP[B] &le; IDEAL[B] for all blocks B.</li>
+  <li>The MFP solution is always smaller than or equal to the MOP solution.
+      Therefore, MFP &le; MOP &le; IDEAL.</li>
+ </ul>
+ <br><br>
+
+
+ <h2>8. Reading</h2>
+  <ul>
+   <li>ALSU: section 9.3</li>
+  </ul>
+  <br>
+  
+
+
+<hr>
+<address><a href="mailto:aho@cs.columbia.edu">aho@cs.columbia.edu</a></address>
+</body></html>

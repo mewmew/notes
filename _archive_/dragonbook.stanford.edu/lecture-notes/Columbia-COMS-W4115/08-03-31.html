@@ -1,0 +1,110 @@
+<html><head><title>Lecture 17: March 31, 2008</title></head><body>
+ <h1>COMS W4115<br>
+  Programming Languages and Translators<br>
+  Lecture 17: Intermediate Representations<br>
+  March 31, 2008
+ </h1>
+
+ <h2>Important Dates</h2>
+ <ul>
+  <li>April 14: Homework #2 given out</li>
+  <li>April 21: Homework #2 due in class</li>
+  <li>April 23: Answers to HW#2 discussed in class</li>
+  <li>April 28&30: 12-minute project presentations in class</li>
+  <li>May 5: Final exam in class</li>
+  <li>May 12&13: 30-minute project demos (11am-5:00pm) in CS conference room</li>
+ </ul>
+
+ <h2>Lecture Outline</h2>
+ <ol>
+  <li>Review</li>
+  <li>Intermediate representations</li>
+  <li>Three-address code</li>
+  <li>Semantic analysis</li>
+  <li>Types</li>
+  <li>Reading</li>
+ </ol>
+
+ <h2>1. Review</h2>
+ <ul>
+  <li>Syntax-directed translation schemes</li>
+  <li>Transforming an SDTS by left factoring</li>
+  <li>SDTSs for translating infix to postfix</li>
+  <li>Translation of while-statements</li>
+ </ul>
+
+ <h2>2. Intermediate Representations</h2>
+ <ul>
+  <li>Compiler front end</li>
+  <li>High-level IR</li>
+  <li>Low-level IR</li>
+  <li>Directed acyclic graphs</li>
+  <ul>
+   <li>Algorithm 6.3: Value-number method for constructing a DAG</li>
+  </ul>
+ </ul>
+
+ <h2>3. Three-Address Code</h2>
+ <ul>
+  <li>Three-address instructions</li>
+  <li>Representations for three-address code</li>
+  <ul>
+   <li>Records</li>
+   <li>Quadruples</li>
+   <li>Triples</li>
+  </ul>
+  <li>Static single-assignment form</li>
+ </ul>
+  
+ <h2>4. Semantic Analysis</h2>
+ <ul>
+  <li>Uses made of semantic information for a variable <code>x</code>.</li>
+  <ul>
+   <li>What kind of value is stored in <code>x</code>?</li>
+   <li>How big is <code>x</code>?</li>
+   <li>Who is responsible for allocating space for <code>x</code>?</li>
+   <li>Who is responsible for initializing <code>x</code>?</li>
+   <li>How long must the value of <code>x</code> be kept?</li>
+   <li>If <code>x</code> is a procedure, what arguments does it take and what
+       kind of return value does it have?</li>
+  </ul>
+  <li>Storage layout for local names</li>
+ </ul>
+
+ <h2>5. Types</h2>
+ <ul>
+  <li>Type expressions</li>
+  <ul>
+   <li>Rules for constructing type expressions</li>
+  </ul>
+  <li>Type equivalence</li>
+  <ul>
+   <li>Are the following two type declarations in C equivalent?</li>
+
+   <pre><code>
+    struct TreeNode {                  struct Node {
+     int value;                         int value;
+     struct TreeNode *left;             struct Node *left;
+     struct TreeNode *right;            struct Node * right;
+    }                                  }
+   </code></pre>
+  </ul>
+  <li>Forms of type equivalence</li>
+  <ul>
+   <li>Name equivalence: two types are equivalent iff they have the same name.</li>
+   <li>Structural equivalence: two types are equivalent iff they have the same structure.</li>
+   <li>To test for structural equivalence, a compiler must encode the structure
+       of a type in its representation. A tree (or type graph) is typically
+       used.</li>
+  </ul>
+ </ul>
+
+ <h2>6. Reading</h2>
+ <ul>
+  <li>ALSU, Sections 6.1-6.3</li>
+ </ul><br>
+
+<hr>
+<address><a href="mailto:aho@cs.columbia.edu">aho@cs.columbia.edu</a></address>
+
+</body></html>

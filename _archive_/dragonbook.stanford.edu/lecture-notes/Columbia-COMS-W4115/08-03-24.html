@@ -1,0 +1,149 @@
+<html><head><title>Lecture 15: March 24, 2008</title></head><body>
+ <h1>COMS W4115<br>
+  Programming Languages and Translators<br>
+  Lecture 15: Syntax-Directed Definitions<br>
+  March 24, 2008
+ </h1>
+
+ <dt>Language tutorials and reference manuals are due in class
+     Wednesday, March 26, 2008.</dt><br>
+ <h2>Lecture Outline</h2>
+ <ol>
+  <li>Midterm solutions</li>
+  <li>Syntax-directed definitions and translation schemes</li>
+  <li>Synthesized and inherited attributes</li>
+  <li>S-attributed SDDs</li>
+  <li>L-attributed SDDs</li>
+  <li>Reading</li>
+ </ol>
+
+ <h2>1. <a href=
+        "http://www1.cs.columbia.edu/~aho/cs4115/lectures/08-03-12_MidtermSolutions.pdf">
+         Midterm solutions</a></h2>
+
+ <h2>2. Syntax-Directed Definitions and Translations Schemes</h2>
+  <ul>
+  <li>A syntax-directed definition (SDD) is a context-free grammar with attributes
+      attached to grammar symbols and semantic rules
+      attached to the productions.
+      The semantic rules define values for attributes associated with the
+      symbols of the productions. These values can be computed by
+      creating a parse tree for the input and then making a sequence of
+      passes over the parse tree, evaluating some or all of the rules on each
+      pass.  SDDs are useful for specifying translations.</li>
+  <li>A syntax-directed translation scheme (SDTS) is a context-free grammar with program
+      fragments, called semantic actions, embedded within production bodies.
+      SDTSs are useful for implementing translations.</li>
+ </ul>
+
+ <h2>3. Synthesized and Inherited Attributes</h2>
+ <ul>
+  <li>Attributes are values computed at the nodes of a parse tree.</li>
+  <li><i>Synthesized attributes</i>
+      are values that are computed at a node <i>N</i> in a parse tree from attribute
+      values of the children of <i>N</i> and perhaps <i>N</i> itself.
+      The identifiers $$, $1, $2, etc., in Yacc actions are
+      synthesized attributes. Synthesized attributes can be
+      easily computed by a shift-reduce parser that keeps the
+      values of the attributes on the parsing stack.
+      See Sect. 5.4.2 of ALSU.</li>
+  <li>An SDD is <i>S-attributed</i> if every attribute is synthesized.</li>
+  <li><i>Inherited attributes</i>
+      are values that are computed at a node <i>N</i> in a parse tree from attribute
+      values of the parent of <i>N</i>, the siblings of <i>N</i>, and <i>N</i> itself.</li>
+  <li>An SDD is <i>L-attributed</i> is every attribute is either synthesized or
+      inherited from the left.  See Sect. 5.2.4 of ALSU for details.</li>
+ </ul>
+
+ <h2>4. S-Attributed SDDs</h2>
+ <ul>
+  <li>Here is an S-attributed SDD for a simple desk calculator
+      that just adds digits.  It is based on an SLR(1) for arithmetic expressions.</li>
+
+  <pre><code>
+   E &rarr; E1 + T     { E.val = E1.val + T.val; }
+
+   E &rarr; T          { E.val = T.val; }
+
+   T &rarr; ( E )      { T.val = E.val; }
+
+   T &rarr; digit      { T.val = digit.lexval; }
+
+  </code></pre>
+  <dt><code>E</code> has the synthesized attributed <code>E.val</code> and 
+      <code>T</code> the synthesized attribute <code>T.val</code>.</dt>
+  <br>
+
+  <li>Here is an S-attributed SDD based on an SLR(1) grammar that
+      translates arithmetic expressions
+      into ASTs.
+      <code>E</code> has the synthesized attributed <code>E.node</code> and 
+      <code>T</code> the synthesized attribute <code>T.node</code>.
+      <code>E.node</code> and <code>T.node</code> point to a node in the AST.
+      The function <code>node(op, left, right)</code>
+      returns a pointer to a node with three fields:
+      the first labeled <code>op</code>, the second a pointer
+      to a left subtree, and the third a pointer to a right subtree.
+      The function <code>leaf(op, value)</code> returns a pointer to a node
+      with two fields: the first labeled <code>op</code>, the second the
+      value of the token. See Ex. 5.11 in ALSU.</li>
+
+  <pre><code>
+   E &rarr; E1 + T     { E.node = Node('+', E1.node, T.node); }
+
+   E &rarr; T          { E.node = T.node; }
+
+   T &rarr; ( E )      { T.node = E.node; }
+
+   T &rarr; id         { T.node = Leaf(id, id.entry); }
+
+  </code></pre>
+ </ul>
+
+ <h2>5. L-Attributed SDDs</h2>
+ <ul>
+  <li>Here is the same simple desk calculator specified as an L-attributed SDD
+      based on an LL(1) grammar.  <code>E</code> and <code>T</code> each have a synthesized
+      attribute val.  <code>A</code> has two attributes:
+      an inherited attribute <code>A.i</code> and a synthesized attribute <code>A.s</code>.
+      See Ex. 5.3 in ALSU.</li>
+  <pre><code>
+   E &rarr; T A        { A.i = T.val; E.val = A.s;}
+
+   A &rarr; + T A1     { A1.i = A.i + F.val; A.s = A1.s; }
+
+   A &rarr; e          { A.s = A.i; }
+
+   T &rarr; ( E )      { T.val = E.val; }
+
+   T &rarr; digit      { T.val = digit.lexval; }
+  </code></pre>
+  <br>
+
+  <li>Here is an L-attributed SDD based on an LL(1) grammar for translating arithmetic
+      expressions into ASTs.  See Ex. 5.12 in ALSU.</li>
+  <pre><code>
+   E &rarr; T A        { E.node = A.s;
+                    A.i = T.node; }
+
+   A &rarr; + T A1     { A1.i = Node('+', A.i, T.node);
+                    A.s = A1.s; }
+
+   A &rarr; e          { A.s = A.i; }
+
+   T &rarr; ( E )      { T.node = E.node; }
+
+   T &rarr; id         { T.node = Leaf(id, id.entry); }
+  </code></pre>
+ </ul>
+
+ <h2>6. Reading</h2>
+ <ul>
+  <li>ALSU, Sections 5.1-5.4</li>
+ </ul><br>
+
+
+<hr>
+<address><a href="mailto:aho@cs.columbia.edu">aho@cs.columbia.edu</a></address>
+
+</body></html>

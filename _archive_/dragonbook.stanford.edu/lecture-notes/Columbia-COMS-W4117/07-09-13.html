@@ -1,0 +1,127 @@
+<html><head><title>Lecture 4: September 13, 2007</title></head><body>
+ <h1>COMS W4117<br>
+  Compilers and Translators:<br>
+  Software Verification Tools<br>
+  Lecture 4: Flow Graphs<br>
+  September 13, 2007
+ </h1>
+
+ <h2>Lecture Outline</h2>
+ <ol>
+  <li>Review</li>
+  <li>Flow graphs and their representation</li>
+  <li>Loops</li>
+  <li>Introduction to code optimization</li>
+  <li>Exercise</li>
+  <li>Reading</li>
+ </ol>
+ <br>
+
+ <h2>1. Review</h2>
+ <ol>
+  <li>Mathematical logic and proofs</li>
+  <li>Compiler phases</li>
+  <li>Reading</li>
+ </ol>
+ <br>
+  
+
+
+ <h2>2. Flow Graphs</h2>
+ <ul>
+  <li>Basic blocks</li>
+  <ul>
+   <li>We can partition the IR into basic blocks, which are maximal sequences of
+       consecutive three-address instructions such that
+   <ol>
+    <li>The flow of control can only enter the basic block through the first
+        instruction of the block.</li>
+    <li>Control will leave the block without halting or branching, except possibly at
+        the last instruction in the block.</li>
+   </ol>
+  </ul>
+  <br>
+
+  <li>Algorithm 8.5: partitioning a sequence of three-address instructions into basic blocks.</li>
+  <br>
+
+  <li>Flow graphs and their representation</li>
+  <ul>
+   <li>The basic blocks become the nodes of a <i>flow graph</i>, whose edges
+       indicate which blocks can follow which other blocks.</li>
+   <dt>There is an edge from block B to block C iff the first instruction in C
+       can immediately follow the last instruction in B.</li>
+   <li>Representation of flow graphs</li>
+   <ul>
+    <li>Flow graphs can be represented by standard data structures for graphs.
+        Linked lists are a common representation.</li>
+    <li>Basic blocks can be represented by DAGs (see Section 8.5 of ALSU).</li>
+   </ul>
+  </ul>
+ </ul>
+ <br><br>
+
+ <h2>3. Loops</h2>
+  <ul>
+   <li>A set of nodes L in a flow graph is a <i>loop</i> if</li>
+   <ol>
+    <li>There is a node in L called the loop entry with the property that no other
+        node in L has a predecessor outside L.</li>
+    <li>Every node in L has a nonempty path completely within L to the entry of L.</li>
+
+  </ul>
+ </ul>
+
+ </ul>
+ <br><br>
+
+ <h2>4. Introduction to code optimization</h2>
+ <ul>
+  <li>Causes of redundancy</li>
+  <li>Semantics-preserving transformations</li>
+  <li>Common subexpression elimination</li>
+  <li>Copy propagation</li>
+  <li>Dead-code elimination</li>
+  <li>Code motion</li>
+  <li>Induction variables and reduction in strength</li>
+ </ul>
+ <br><br>
+
+
+ <h2>5. Exercise: construct a flow graph for the following code sequence:</h2>
+ <ul>
+    <pre><code>
+do {
+	KeAcquireSpinLock();
+
+	nPacketsOld = nPackets; 
+		
+	if(request){
+		request = request-&gt;Next;
+		KeReleaseSpinLock();
+		nPackets++;
+	}
+} while (nPackets != nPacketsOld);
+
+KeReleaseSpinLock();
+    </code></pre>
+
+ </ul>
+
+ <br><br>
+
+ <h2>6. Reading</h2>
+  <ul>
+   <li>ALSU: sections 8.4, 8.5, 9.1</li>
+   <li><a href="http://research.microsoft.com/slam/papers/popl02.pdf">
+      Ball and Rajamani: The SLAM project: Debugging system software via static
+      analysis</a></li>
+   <li><a href="http://www.cs.kuleuven.ac.be/conference/EuroSys2006/papers/p73-ball.pdf">
+       Ball et al.: Thorough static analysis of device drivers</a></li>
+   </ul>
+  </ul>
+
+
+<hr>
+<address><a href="mailto:aho@cs.columbia.edu">aho@cs.columbia.edu</a></address>
+</body></html>

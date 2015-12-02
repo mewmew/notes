@@ -1,0 +1,97 @@
+<html><head><title>Lecture 14: October 23, 2007</title></head><body>
+ <h1>COMS W4117<br>
+  Compilers and Translators:<br>
+  Software Verification Tools<br>
+  Lecture 14: Datalog<br>
+  October 23, 2007
+ </h1>
+
+ <h2>Lecture Outline</h2>
+ <ol>
+  <li>Review</li>
+  <li>Introduction to Datalog</li>
+  <li>Datalog rules</li>
+  <li>Execution of Datalog programs</li>
+ </ol>
+ <br><br>
+
+ <h2>1. Review</h2>
+ <ul>
+  <li>Context-sensitive vs. context-insensitive analysis</li>
+  <li>Call strings</li>
+  <li>Cloning-based context-sensitive analysis</li>
+  <li>Summary-based context-sensitive analysis</li>
+  <li>Pointer alias analysis</li>
+  <li>SQL injections</li>
+ </ul>
+ <br><br>
+  
+
+ <h2>2. Introduction to Datalog</h2>
+ <ul>
+  <li>Datalog is a simplified Prolog-like language initially designed for
+      database query evaluation.</li>
+  <li>Datalog allows us to succinctly express rules about inferring program facts.</li>
+  <li>It also allows us to efficiently implement these rules.</li>
+  <li>The elements of Datalog are atoms of the form p(X<sub>1</sub>, . . . , X<sub>n</sub>) where</li>
+  <ul>
+   <li>p is a predicate</li>
+   <li>X<sub>1</sub>, . . . , X<sub>n</sub> are terms (variables or constants)</li>
+  </ul>
+  <li>A ground atom is a predicate with only constants as arguments.</li>
+  <li>A literal is an atom or a negated atom.</li>
+ </ul>
+ <br><br>
+
+
+ <h2>3. Datalog Rules</h2>
+ <ul>
+  <li>Rules are a way of expressing logical inferences.</li>
+  <li>A Datalog rule is of the form</li>
+  <ul>
+   <dt>H :- B <sub>1</sub> &amp; B <sub>2</sub> &amp; &hellip; &amp; B <sub>n</sub></dt>
+  </ul>
+  <dt>where H and the B's are literals; H is called the head, and the B's the body of the rule.</dt>
+  <li>A Datalog program is a collection of rules.  The program is applied to a
+      set of ground atoms for some of the predicates.</li>
+  <li>Example:</li>
+
+   <pre><code>
+path(X, Y) :- edge(X, Y)
+path(X, Y) :- path(X, Z) &amp; path(Z, Y)
+   </code></pre>
+
+  <dt>is a Datalog program that computes the paths in a graph given its set of edges.</li><br>
+
+  <li>An extensional database (EDB) is a predicate whose true facts are defined a priori;
+      e.g., like edge(X, Y)</li>
+  <li>An intensional database (IDB) is a predicate defined by a rule; like path(X, Y).</li>
+ </ul>
+
+ <h2>4. Execution of Datalog Programs</h2>
+ <ul>
+  <li>Given a Datalog program and a set of facts for each EDB predicate,
+      we can iteratively find the set of facts defined for each IDB predicate.
+      We start with the assumption that each IDB is initially empty, and then
+      apply the rules inferring new facts whenever the rules require us to do so.
+      We keep applying this process until no more changes occur to any IDB
+      predicate.  The process is similar to the iterative algorithm for
+      data-flow analysis.</li>
+  <li>See example 12.13, p. 924, for computing reaching definitions using Datalog.</li>
+ </ul>
+ <br><br>
+
+ <h2>5. Reading</h2>
+  <ul>
+   <li>ALSU, Sect. 12.3.</li>
+   <li><a href="http://bddbddb.sourceforge.net/">Try bddbddb to experiment with Datalog</a></li>
+   <li><a href="http://suif.stanford.edu/~jwhaley/PLDITutorial.ppt">
+       John Whaley tutorial: Using Datalog and BDDs for Program Analysis</a></li>
+  </ul>
+  <br>
+  
+
+
+<hr>
+<address><a href="mailto:aho@cs.columbia.edu">aho@cs.columbia.edu</a></address>
+</body></html>

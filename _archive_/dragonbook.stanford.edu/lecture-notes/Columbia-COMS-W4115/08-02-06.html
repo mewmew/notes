@@ -1,0 +1,124 @@
+<html><head><title>Lecture 5: February 6, 2008</title></head><body>
+ <h1>COMS W4115<br>
+  Programming Languages and Translators<br>
+  Lecture 5: Lexical Analysis, February 6, 2008
+ </h1>
+
+ <h2>Lecture Outline</h2>
+ <ol>
+  <li>Review</li>
+  <li>The lexical analyzer
+  <li>Basic definitions from language theory</li>
+  <li>Regular expressions</li>
+  <li>Reading</li>
+ </ol>
+
+ <h2>1. Review</h2>
+ <ul>
+  <li>Overview of compilation</li>
+  <ul>
+   <li>Front end: analysis</li>
+   <li>Back end: synthesis</li>
+   <li>IR: Intermediate representation(s)</li>
+   <li>Phases</li>
+    <ul>
+     <li>lexical analyzer (scanner)</li>
+     <li>syntax analyzer (parser)</li>
+     <li>semantic analyzer</li>
+     <li>intermediate code generator</li>
+     <li>machine-independent code optimizer</li>
+     <li>code generator</li>
+     <li>machine-dependent code optimizer</li>
+    </ul>
+   <li>Symbol table</li>
+   <li>Error handler</li>
+  </ul>
+  <li>Project teams should now be formed.</li>
+ </ul>
+
+ <h2>2. The Lexical Analyzer</h2>
+ <ul>
+  <li>The first phase of the compiler is the lexical analyzer (lexer).</li>
+  <li>It reads the stream of characters making up the source
+      program and groups the characters into logically meaningful sequences called lexemes.</li>
+  <li>For each lexeme the lexer sends to the parser a token of the
+      form &lt;token-name, attribute-value&gt;.</li>
+  <li>For a token such as an identifier, the lexer will make an entry into
+      the symbol table in which it stores attributes such as
+      the lexeme and type associated with the token.</li>
+  <li>The lexer will also strip out whitespace and expand macros.</li>
+ </ul>
+
+ <h2>3. Basic Definitions from Language Theory</h2>
+ <ul>
+  <li>Symbol (character, letter)</li>
+  <li>Alphabet: a finite nonempty set of characters</li>
+  <ul>
+   <li>Examples: {0, 1}, ASCII, Unicode</li>
+  </ul>
+  <li>String (sentence, word): a finite sequence of characters, possibly empty.</li>
+  <li>Language: a (countable) set of strings, possibly empty.</li>
+  <li>Operations on strings</li>
+  <ul>
+   <li>concatenation</li>
+   <li>exponentiation</li>
+   <ul>
+    <li><i>x</i><sup>0</sup> is the empty string &epsilon;.</li>
+    <li><i>x<sup>i</sup></i> = <i>x<sup>i</i>-1</sup><i>x</i>, for <i>i</i> &gt; 0</li>
+   </ul>
+   <li>prefix, suffix, substring, subsequence</li>
+  </ul>
+  <li>Operations on languages</li>
+  <ul>
+   <li>union</li>
+   <li>concatenation</li>
+   <li>exponentiation</li>
+   <ul>
+    <li><i>L</i><sup>0</sup> is the empty set.</li>
+    <li><i>L<sup>i</sup></i> = <i>L<sup>i</i>-1</sup><i>L</i>, for <i>i</i> &gt; 0</li>
+   </ul>
+   <li>Kleene closure</li>
+  </ul>
+ </ul>
+
+
+ <h2>4. Regular Expressions</h2>
+ <ul>
+  <li>A regular expression is a notation for specifying a set of strings.</li>
+  <li>Many of today's programming languages use regular expressions to match
+      patterns in strings.</li>
+  <ul>
+   <li>E.g., awk, flex, lex, java, javascript, perl, python</li>
+  </ul>
+  <li>Today regular expressions come many different forms.</li>
+  <ul>
+   <li>The earliest and simplest are the Kleene regular expressions: See ALSU, Sect. 3.3.3.</li>
+   <li>Awk and egrep extended grep's regular expressions with union and parenthesis.</li>
+   <li>POSIX attempted to standardize Unix regular expressions.</li>
+   <li>Perl has an amazingly rich set of regular expression operators.</li>
+   <li>Python uses pcre regular expressions.</li>
+  </ul>
+  <li>Lex regular expressions</li>
+  <ul>
+   <li>The lexical analyzer generators flex and lex use extended regular expressions
+       to specify lexeme patterns making up tokens: See ALSU, Fig. 3.8, p. 127.</li>
+   <li>See <a href="http://dinosaur.compilertools.net/">
+      The Lex &amp; Yacc Page</a>
+      for lex and flex tutorials and manuals.</li>
+  </ul>
+ </ul>
+
+
+ <h2>5. Reading Assignment</h2>
+ <ul>
+  <li>Read Chapter 3, all sections except 3.9.</li>
+ </ul><br>
+
+
+
+
+
+<hr>
+<address><a href="mailto:aho@cs.columbia.edu">aho@cs.columbia.edu</a></address>
+
+</body></html>

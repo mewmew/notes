@@ -1,0 +1,191 @@
+<html><head><title>Lecture 18: April 2, 2008</title></head><body>
+ <h1>COMS W4115<br>
+  Programming Languages and Translators<br>
+  Lecture 18: Types in Programming Languages<br>
+  April 2, 2008
+ </h1>
+
+ <h2>Lecture Outline</h2>
+ <ol>
+  <li>Review</li>
+  <li>Types</li>
+  <li>Type equivalence</li>
+  <li>Type inference</li>
+  <li>Type conversions</li>
+  <li>Run-time storage organization</li>
+  <li>Reading</li>
+ </ol>
+
+ <h2>1. Review</h2>
+ <ul>
+  <li>Intermediate representations</li>
+  <li>Three-address code</li>
+  <li>Semantic analysis</li>
+  <li>Types</li>
+ </ul>
+
+ <h2>2. Types</h2>
+ <ul>
+  <li>Type expressions</li>
+  <ul>
+   <li>The type of a construct in a program can be denoted by a type expression.</li>
+   <li>A type expression is either a basic type (e.g., <code>integer</code>) or
+       a type constructor applied to a type expression (e.g., a function from an integer
+       to an integer).
+  </ul>
+  <li>Type system: a set of rules for assigning type expressions to the
+      syntactic constructs of a program.</li>
+  <li>Statically typed language: one in which all constructs of a language can be
+      typed at compile type. C, Java, Haskell are statically typed.</li>
+  <li>Dynamically typed language: one in which some of the constructs of a language can only be
+      typed at run time. Perl, Python, and Lisp are dynamically typed.</li>
+  <li>Strongly typed language: one in which every construct in a program can be assigned an
+      unambiguous type. ML and Haskell are strongly typed.</li>
+  <li>Role of types in a programming language</li>
+  <ul>
+   <li>Reliable software: more robust programs will result if type errors can be caught
+       at compiler time.</li>
+   <li>Type checking: making sure the operands of an operator have compatible types.</li>
+   <li>Translation: type determines the location and amount of storage needed for
+       a name at run time.</li>
+  </ul>
+ </ul>
+
+ <h2>3. Type Equivalence</h2>
+ <ul>
+  <li>Name equivalence: two types are equivalent iff they have the same name.</li>
+  <li>Structural equivalence: two types are equivalent iff they have the same structure.</li>
+  <li>To test for structural equivalence, a compiler must encode the structure
+      of a type in its representation. A tree (or type graph) is typically
+      used.</li>
+ </ul>
+
+ <h2>4. Type Inference Rules</h2>
+ <ul>
+  <li>Type inference rules specify for each operator the mapping between the types
+      of the operands and the type of the result.</li>
+  <li>E.g., result types for <code>x + y</code>:</li>
+   <pre><code>
+   <table border="1">
+    <tbody><tr>
+     <th><code>&nbsp;+&nbsp;</code></th>
+     <th><code>int</code></th>
+     <th><code>float</code></th>
+    </tr>
+    <tr>
+     <td style="text-align: center;"><code>&nbsp;<b>int</b>&nbsp;</code></td>
+     <td style="text-align: center;"><code>&nbsp;int&nbsp;</code></td>
+     <td style="text-align: center;"><code>&nbsp;float&nbsp;</code></td>
+    </tr>
+    <tr>
+     <td style="text-align: center;"><code><b>float</b></code></td>
+     <td style="text-align: center;"><code>float</code></td>
+     <td style="text-align: center;"><code>float</code></td>
+    </tr>
+    </tbody>
+   </table></code></pre>
+   <br>
+
+  <li>Operator and function overloading</li>
+  <ul>
+   <li>In Java the operator <code>+</code> can mean addition or string concatenation
+       depending on the types of its operands.</li>
+   <li>We can choose between two versions of an overloaded function by
+       looking at the types of their arguments.</li>
+  </ul>
+  <li>Function calls</li>
+  <ul>
+   <li>Compiler must check that the type of each actual parameter is compatible with
+       the type of the corresponding formal parameter. It must check that the
+       type of the returned value is compatible with the type of the function.</li>
+   <li>The <i>type signature</i> of a function specifies the types of the formal
+       parameters and the type of the return value.</li>
+   <li>Example: <code>strlen</code> in C</li>
+   <ul>
+    <li>Function prototype in C:</li>
+    <pre><code>
+    unsigned int strlen(const char *s);
+    </code></pre>
+    <li>Type expression:</li>
+    <pre><code>
+    strlen: const char * &#8594; unsigned int
+    </code></pre>
+   </ul>
+  </ul>
+
+  <li>Polymorphic functions</li>
+  <ul>
+   <li>A polymorphic function allows a function to manipulate data structures
+       regardless of the types of the elements in the data structure</li>
+   <li>Example: Fig. 6.28 (p. 391) -- an ML program for the length of a list</li>
+  </ul>
+ </ul>
+
+ <h2>5. Type Conversions</h2>
+ <ul>
+  <li>Implicit type conversions</li>
+  <ul>
+   <li>In an expression like <code>f + i</code> where <code>f</code> is a float and
+       <code>i</code> is an integer a compiler must first convert the integer to a
+       float before the floating point addition operation is performed. That is, the
+       expression must be transformed into an intermediate representation like</li>
+       <pre><code>
+         t1 = INTTOFLOAT i
+         t2 = x FADD t1
+       </code></pre>
+  </ul>
+  <li>Explicit type conversions</li>
+  <ul>
+   <li>In C, explicit type conversions can be forced ("coerced") in an expression using a
+       unary operator called a cast.  E.g., <code>sqrt((double) n)</code> converts the
+       value of the integer <code>n</code> to a <code>double</code> before passing it
+       on to the square root routine <code>sqrt</code>.</li>
+  </ul>
+ </ul><br>
+   
+ <h2>6. Run-time Storage Organization</h2>
+ <ul>
+  <li>Run-time memory layout</li>
+  <ul>
+   <li>Memory layout for Linux</li>
+   <pre><code>
+   (high address) Runtime stack
+                    &darr;
+
+                  free memory
+
+                    &uarr;                
+                  Runtime heap
+                  Static
+    (low address) Code
+   </code></pre>
+
+  </ul>
+  <li>Activation records</li>
+  <ul>
+  <li>Callee's activation record</li>
+
+  <pre><code>
+                 Local-data area
+            fp &rarr; Caller's fp
+                 Addressability
+                 Return address
+                 Return value
+                 Register-save area
+                 Parameters
+  </code></pre>
+
+  </ul>
+ </ul>
+
+
+ <h2>7. Reading</h2>
+ <ul>
+  <li>ALSU, Sections 6.3, 7.1</li>
+ </ul><br>
+
+<hr>
+<address><a href="mailto:aho@cs.columbia.edu">aho@cs.columbia.edu</a></address>
+
+
+</body></html>

@@ -1,0 +1,143 @@
+<html>
+<head>
+ <title>
+  Lecture 16: March 26, 2008
+ </title>
+</head>
+<body>
+ <h1>COMS W4115<br />
+  Programming Languages and Translators<br />
+  Lecture 16: Syntax-directed Translation Schemes<br />
+  March 26, 2008
+ </h1>
+
+ <h2>Lecture Outline</h2>
+ <ol>
+  <li>Syntax-directed translation schemes</li>
+  <li>Transforming an SDTS by left factoring</li>
+  <li>SDTSs for translating infix to postfix</li>
+  <li>Translation of while-statements</li>
+ </ol>
+
+ <h2>1. Syntax-directed Translation Schemes</h2>
+ <ul>
+  <li>A syntax directed translation scheme is a context-free grammar       with program fragments in the right-hand sides of its                 productions.</li>
+  <li>A postfix SDTS has all of its program fragments at the
+      right end of each production.</li>
+ </ul>
+
+ <h2>2. Transforming an SDTS by Left-factoring</h2>
+ <ul>
+  <li>Given a postfix SDTS with left recursion:</li>
+  <pre><code>
+   A &rarr; A1 Y     { A.s = g(A1.s, Y.s); }
+   A &rarr; X        { A.s = f(X.s); }
+  </code></pre>
+
+  <dt>We can left factor the productions, introduce inherited
+      attribute <code>R.i</code> and synthesized attribute
+      <code>R.s</code> for the nonterminal <code>R</code>, and
+      transform the semantic actions as follows to produce
+      an equivalent SDTS.</dt>
+
+  <pre><code>
+   A &rarr; X  { R.i = f(X.s); }  R  { A.s = R.s; }
+   R &rarr; Y  { R1.i = g(R.i, Y.s);  R1  { R.s = R1.s; }
+   R &rarr; &epsilon;  { R.s = R.i; }
+  </code></pre>
+ </ul>
+
+
+ <h2>3. SDTSs for Translating Infix to Postfix</h2>
+ <ul>
+  <li>Example 1: Here is a postfix SDTS that translates infix               arithmetic expressions into postfix notation.  The translation
+      can be done during bottom-up parsing.</li>
+
+  <pre><code>
+   E &rarr; E + T     { print('+'); }
+   E &rarr; T
+   T &rarr; T * F     { print('*'); }
+   T &rarr; T
+   F &rarr; ( E )
+   F &rarr; digit     { print(digit.lexval); }
+  </code></pre>
+
+  <li>Example 2: Here is an SDTS based on an LL(1) grammar
+      that translates infix arithmetic expressions into postfix             notation. The translation
+      can be done during top-down parsing parsing.</li>
+
+  <pre><code>
+   E &rarr; T A
+   A &rarr; + T { print('+'); } A
+   A &rarr; &epsilon;
+   T &rarr; F B
+   B &rarr; * F { print('*'); } B
+   B &rarr; &epsilon;
+   F &rarr; ( E )
+   F &rarr; digit { print(digit.lexval); }
+  </code></pre>
+ </ul>
+
+ <h2>4. Translation of while-statements</h2>
+ <ul>
+  <li>Consider the production <code>S &rarr; while ( C ) S1</code>
+      for while-statements.
+      The shape of the code for implementing this production
+      can take the form:</li>
+
+  <pre><code>
+   label L1: // beginning of code for S
+      code to evaluate C
+      if C is true goto C.true // C.true will be set to L2
+      if C is false goto C.false // C.false will be set to S.next
+   label L2:
+      code to evaluate S1
+      goto L1
+   S.next:  // this is where control flow will go after executing S
+  </code></pre>
+
+  <li>Here is an SDD for this translation:</li>
+
+  <pre><code>
+   S &rarr; while ( C ) S1  {
+      L1 = newlabel();
+      L2 = newlabel();
+      S1.next = L1;
+      C.false = S.next;
+      C.true = L2;
+      S.code = label || L1 || C.code || label || L2 || S1.code
+   }
+  </code></pre>
+
+  <li>We can transform this SDD into the following SDTS:</li>
+
+  <pre><code>
+   S &rarr; while (
+            { L1 = newlabel(); L2 = newlabel();
+              C.false = S.next; C.true = L2;
+            }
+            C ) { S1.next = L1; }
+            S1
+            { S.code = label || L1 || C.code || label || L2 || S1.code;
+            }
+  </code></pre>
+
+ </ul>    
+
+ <h2>5. Reading</h2>
+ <ul>
+  <li>ALSU, Section 5.5.</li>
+ </ul><br />
+
+
+
+ <br /><br />
+
+
+
+
+
+<hr>
+<address><a href = "mailto:aho@cs.columbia.edu">aho@cs.columbia.edu</a></address>
+</body>
+</html>

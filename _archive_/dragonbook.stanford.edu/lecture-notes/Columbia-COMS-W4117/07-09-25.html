@@ -1,0 +1,168 @@
+<html><head><title>Lecture 7: September 25, 2007</title></head><body>
+ <h1>COMS W4117<br>
+  Compilers and Translators:<br>
+  Software Verification Tools<br>
+  Lecture 7: Data-Flow Analysis Frameworks<br>
+  September 25, 2007
+ </h1>
+
+ <h2>Lecture Outline</h2>
+ <ol>
+  <li>Review</li>
+  <li>Data-flow analysis frameworks</li>
+  <li>Iterative algorithm for general frameworks</li>
+  <li>Meaning of a data-flow solution</li>
+  <li>Framework for constant propagation</li>
+  <li>Reading</li>
+ </ol>
+ <br><br>
+
+ <h2>1. Review</h2>
+ <ol>
+  <li>Available expressions</li>
+  <li>Basic questions about the iterative algorithm</li>
+  <li>Lattices and semilattices</li>
+  <li>Transfer functions</li>
+
+ </ol>
+ <br><br>
+  
+
+ <h2>2. Data-Flow Analysis Frameworks</h2>
+ <ul>
+  <li>Basic questions</li>
+  <ul>
+   <li>When is the iterative algorithm correct?</li>
+   <li>How precise is the solution?</li>
+   <li>Under what conditions does the iterative algorithm converge?</li>
+   <li>What is the meaning of the solution to the data-flow equations?</li>
+  </ul>
+  <li> Definition of a data-flow analysis framework</h2>
+  <ul>
+   <li>Data-flow graph with an ENTRY and EXIT node.</li>
+   <li>Direction: forwards or backwards.</li>
+   <li>Semilattice with values V for IN and OUT and a meet operator &and;.
+   <li>A family of transfer functions for the blocks of the data-flow graph.</li>
+   <li>A constant value for the boundary condition.</li>
+  </ul>
+
+ <li>Monotone frameworks</li>
+  <ul>
+   <li>A framework is monotone (order preserving) if for all x and y in V and f in F,
+       x &le; y implies f(x) &le; f(y).</li>
+   <li>Or, equivalently, f(x &and; y) &le; f(x) &and; f(y). </li>
+  </ul>
+  <li>Fixedpoints</li>
+  <ul>
+   <li>Let f be a function on a set V.  An element x in V is a fixedpoint if f(x) = x.</li>
+   <li>Let f be a monotone function. A maximum (least) fixedpoint of f is the greatest
+       (least) element x such that f(x) = x.</li>
+   <li>Knaster-Tarski theorem: If f is a monotone function on a complete lattice L,
+       then the set of fixedpoints of f in L is also a complete lattice.</li>
+   <li>If f is a monotone function on a complete lattice L, then the maximum fixedpoint of f
+       is the limit of the sequence</li>
+       <dt>&nbsp;&nbsp;&nbsp;f<sub>0</sub> = TOP</dt>
+       <dt>&nbsp;&nbsp;&nbsp;f<sub>n+1</sub> = f(f<sub>n</sub>)<dt>
+  </ul>
+  <li>Distributive frameworks</li>
+  <ul>
+   <li>A framework is distributive if for all x and y in V and f in F,
+       f(x &and; y) = f(x) &and; f(y). </li>
+   <li>Every distributive framework is monotone (but not conversely).</li>
+   <li>Reaching definitions, live variables, and available expressions are all
+       distributive frameworks.</li>
+  </ul>
+
+ </ul>
+ <br><br>
+
+
+ <h2>3. The Iterative Algorithm for General Frameworks</h2>
+ <ul>
+  <li>Input: a data-flow analysis framework.</li>
+  <li>Output: the sets IN[B] and OUT[B]
+      for each block B in the data-flow graph.</li>
+  <li>Method: The algorithm is given in Fig. 9.23, p. 627.</li>
+  <li>Important properties of the algorithm:</li>
+  <ul>
+   <li>If the algorithm converges, the result is a solution to the data-flow equations.</li>
+   <li>If the framework is monotone, the solution is the MFP of the data-flow equations.</li>
+   <li>If the semilattice of the framework is monotone and of finite height, the
+       algorithm is guaranteed to converge.</li>
+  </ul>
+ </ul>
+ <br><br>
+
+ <h2>4. Meaning of a Data-Flow Solution</h2>
+ <ul>
+  <li>For a forward data-flow framework, the IDEAL[B] solution for a block B is the meet over all
+      feasible paths P of f<sub>P</sub>(v<sub>ENTRY</sub>).</li>
+  <ul>
+   <li>Any answer greater than IDEAL is incorrect.</li>
+   <li>Any answer smaller than or equal to IDEAL is safe.</li>
+  </ul>
+  <li>MOP[B], the meet over all paths solution, assumes that every path in the data-flow graph
+      can be taken, but some of these paths may not be feasible. 
+      Thus, MOP[B] &le; IDEAL[B] for all blocks B.</li>
+  <li>The MFP solution is always smaller than or equal to the MOP solution.
+      Therefore, MFP &le; MOP &le; IDEAL.</li>
+ </ul>
+ <br><br>
+
+ <h2>5. Framework for Constant Propagation</h2>
+ <ul>
+  <li>Constant propagation, often called "constant folding", replaces expressions that always evaluate
+      to the same constant by that constant.</li>
+  <li>Constant-propagation framework</li>
+  <ul>
+   <li>The constant semilattice for a single variable has</li>
+   <ol>
+    <li>All constants appropriate for the type of the variable.</li>
+    <li>The value NAC for not-a-constant. NAC is the bottom element.</li>
+    <li>The value UNDEF for undefined. UNDEF is the top element.</li>
+    <li>The following properties hold:</li>
+    <ul>
+     <li>UNDEF &and; v = v for all values v.</li>
+     <li>NAC &and; v = NAC for all values v.</li>
+     <li>c &and; c = c for all constants c.</li>
+     <li>c &and; d = NAC for any two distinct constants c and d.</li>
+    </ul>
+   </ol>
+   <li>Transfer functions</li>
+   <ul>
+    <li>A data-flow value for the framework is a map from each variable in the program
+        to one of the values in the constant semilattice.</li>
+    <li>We use m(v) to denote the lattice value of program variable v.</li>
+    <li>The set F consists of transfer functions that accept a map of variables to values
+        in the constant semilattice and return return another such map.</li>
+    <li>Let f<sub>s</sub> be the transfer function for statement s, and let m and m' be
+        data-flow values such that m' = f<sub>s</sub>(m).</li>
+    <li>Forms for statement s:</li>
+    <ul>
+     <li>If s is x = c, then m'(x) = c.</li>
+     <li>If s is x = y + z, then m'(x) =</li>
+     <ul>
+      <li>m(y) + m(z) if m(y) and m(z) are constant values</li>
+      <li>NAC if either m(y) or m(z) is NAC</li>
+      <li>UNDEF otherwise
+     </ul>
+     <li>If the right side of statement s is anything else (e.g., function call, pointer expression),
+         then m'(x) = NAC.</li>
+    </ul>
+   </ul>
+   <li>This framework is monotone but not distributive.</li>
+  </ul>
+ </ul><br><br>
+
+
+ <h2>6. Reading</h2>
+  <ul>
+   <li>ALSU: sections 9.3, 9.4</li>
+  </ul>
+  <br>
+  
+
+
+<hr>
+<address><a href="mailto:aho@cs.columbia.edu">aho@cs.columbia.edu</a></address>
+</body></html>

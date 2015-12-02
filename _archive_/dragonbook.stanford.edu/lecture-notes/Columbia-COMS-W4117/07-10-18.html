@@ -1,0 +1,248 @@
+<html><head><title>Lecture 13: October 18, 2007</title></head><body>
+ <h1>COMS W4117<br>
+  Compilers and Translators:<br>
+  Software Verification Tools<br>
+  Lecture 13: Applications of Interprocedural Analysis<br>
+  October 18, 2007
+ </h1>
+
+ <h2>Lecture Outline</h2>
+ <ol>
+  <li>Review</li>
+  <li>Context-sensitive vs. context-insensitive analysis</li>
+  <li>Call strings</li>
+  <li>Cloning-based context-sensitive analysis</li>
+  <li>Summary-based context-sensitive analysis</li>
+  <li>Pointer alias analysis</li>
+  <li>SQL injections</li>
+  <li>Buffer overflows</li>
+ </ol>
+ <br><br>
+
+ <h2>1. Review</h2>
+ <ul>
+  <li>Intraprocedural vs. interprocedural analysis</li>
+  <li>Call graphs</li>
+ </ul>
+ <br><br>
+  
+
+ <h2>2. Context-sensitive vs. Context-insensitive Analysis</h2>
+ <ul>
+  <li>Context-insensitive interprocedural analysis treats each call and return
+      statement as goto operations ignoring the order of the calls.</li>
+  <li>We can model this kind of analysis with a super control-flow graph (like the PDG)
+      which is a control-flow graph with additional edges connecting each call
+      site to the beginning of the procedure it calls and each return statement to
+      the instruction following the call site.</li>
+  <li>A context-sensitive analysis keeps track of the context in which each
+      procedure was called.</li>
+
+    <pre><code>
+
+     for (i = 0; i < n; i++) {
+c1:    t1 = f(0);
+c2:    t2 = f(243);
+c3:    t3 = f(243);
+       X[i] = t1 + t2 + t3;
+     }
+
+     int f(int v) {
+       return (v+1);
+     }
+
+    </code></pre>
+
+  <li>A context-insensitive analysis yields that X[i] is either 3, 246, 489, or 732.</li>
+  <li>A context-sensitive analysis yields that X[i] is 489.</li>
+ </ul>
+ <br><br>
+
+
+ <h2>3. Call Strings</h2>
+ <ul>
+  <li>A calling context is defined by the contents of the entire call stack.
+      We refer to the string of call sites on the stack as the <i>call string</i>.</li>
+  <li>Consider a modification of the above program where the calls to f are now
+      calls to g, which then calls f:</li>
+
+   <pre><code>
+
+     for (i = 0; i < n; i++) {
+c1:    t1 = g(0);
+c2:    t2 = g(243);
+c3:    t3 = g(243);
+       X[i] = t1 + t2 + t3;
+     }
+
+     int g(int v) {
+c4:    return f(v);
+     }
+
+     int f(int v) {
+       return (v+1);
+     }
+
+   </code></pre>
+
+  <li>There are three calls strings to f: (c1, c4), (c2, c4), (c3, c4).</li>
+
+ </ul>
+ <br><br>
+
+ <h2>4. Cloning-based Context-sensitive Analysis</h2>
+ <ul>
+  <li>In cloning-based context-sensitive analysis we create a conceptual clone of
+      the procedure for each context of interest and then apply a context-insensitive
+      analysis to the cloned call graph.</li>
+  <li>In practice we do not clone the procedure; we use an internal data structure
+      to keep track of the analysis results on each clone.</li>
+  <li>A cloned version of the above program is shown here:</li>
+
+   <pre><code>
+
+     for (i = 0; i < n; i++) {
+c1:    t1 = g(0);
+c2:    t2 = g(243);
+c3:    t3 = g(243);
+       X[i] = t1 + t2 + t3;
+     }
+
+     int g(int v) {
+c4.1:  return f1(v);
+     }
+
+     int g(int v) {
+c4.2:  return f2(v);
+     }
+
+     int g(int v) {
+c4.3:  return f3(v);
+     }
+
+     int f1(int v) {
+       return (v+1);
+     }
+
+     int f2(int v) {
+       return (v+1);
+     }
+
+     int f3(int v) {
+       return (v+1);
+     }
+
+
+   </code></pre>
+
+ </ul>
+ <br><br>
+
+ <h2>5. Summary-based Context-sensitive Analysis</h2>
+ <ul>
+  <li>In summary-based context-sensitive analysis we create a concise description ("summary") of
+      the observable behavior of each procedure.</li>
+  <li>The purpose of the summary is to avoid reanalyzing the procedure body at each
+      invoking call site.</li>
+  <li>Each procedure is represented by a region with a single entry point.</li>
+  <li>A procedure region can be nested within several different outer regions.</li>
+  <li>The analysis has two parts:</li>
+  <ol>
+   <li>A bottom-up phase that computes a transfer function to summarize the
+       effect of a procedure.</li>
+   <li>A top-down phase that propagates caller information to compute callee results.</li>
+  </ol>
+  <li>The following program shows the result of propagating all possible
+      constant arguments to the function f in the program in section (4) above:</li>
+
+   <pre><code>
+
+     for (i = 0; i < n; i++) {
+c1:    t1 = f0(0);
+c2:    t2 = f243(243);
+c3:    t3 = f243(243);
+       X[i] = t1 + t2 + t3;
+     }
+
+     int f0(int v) {
+       return (1);
+     }
+
+     int f243(int v) {
+       return (244);
+     }
+
+   </code></pre>
+
+ </ul>
+ <br><br>
+
+ <h2>6. Pointer Alias Analysis</h2>
+ <ul>
+  <li>We can improve the accuracy of program analyses if we can determine
+      whether two pointers can be aliases of one another.</li>
+  <li>If we can determine that p and q cannot point to the same location
+      in the following code fragment, then we can conclude that x is 1
+      at the end of the third statement.</li>
+
+   <pre><code>
+*p = 1;
+*q = 2;
+ x = *p;
+   </code></pre>
+
+ 
+
+ </ul>
+ <br><br>
+
+ <h2>7. SQL Injection</h2>
+ <ul>
+  <li>Suppose a banking application uses a relation:</li>
+
+   <pre><code>
+AcctData(name, password, balance)
+   </code></pre>
+
+  <li>Suppose a user enters a name n and a password p into a Web form
+      and the following SQL is then executed:</li>
+   <pre><code>
+SELECT balance FROM AcctData
+WHERE name = ':n' and password = ':p'
+   </code></pre>
+
+  <li>A hacker enters:</li>
+   <pre><code>
+n = Charles Dickens' -- 
+p = who cares
+   </code></pre>
+
+  <li>The SQL query becomes:</li>
+   <pre><code>
+SELECT balance FROM AcctData
+WHERE name = 'Charles Dickens' --' and password = 'who cares'
+   </code></pre>
+
+  <li>Since -- introduces a comment, the SQL query becomes:</li>
+   <pre><code>
+SELECT balance FROM AcctData
+WHERE name = 'Charles Dickens'
+   </code></pre>
+  <dt>and the hacker get Charles Dickens' balance.</dt>
+
+  <li>A full interprocedural analysis of the program is necessary to detect such errors.</li>
+ </ul>
+ <br><br>
+
+
+ <h2>8. Reading</h2>
+  <ul>
+   <li>ALSU, Sect. 12.2.</li>
+  </ul>
+  <br>
+  
+
+
+<hr>
+<address><a href="mailto:aho@cs.columbia.edu">aho@cs.columbia.edu</a></address>
+</body></html>

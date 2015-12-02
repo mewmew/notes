@@ -1,0 +1,157 @@
+<html><head><title>Lecture 13: March 5, 2008</title></head><body>
+ <h1>COMS W4115<br>
+  Programming Languages and Translators<br>
+  Lecture 13: Syntax-Directed Translation<br>
+  March 5, 2008
+ </h1>
+
+ <h2>Lecture Outline</h2>
+ <ol>
+  <li>Review</li>
+  <li>Error recovery in Yacc</li>
+  <li>Syntax-directed definitions</li>
+  <li>Synthesized and inherited attributes</li>
+  <li>SDD for binary-to-decimal translation</li>
+  <li>From arithmetic expressions to syntax trees</li>
+  <li>Reading</li>
+ </ol>
+
+ <h2>1. Review</h2>
+ <ul>
+  <li>Parsing action conflicts</li>
+  <li>Resolving shift/reduce conflicts</li>
+  <li>Using Yacc to generate LALR(1) parsers</li>
+  <li>Using Yacc with ambiguous grammars</li>
+ </ul>
+
+ <h2>2. Error Recovery in Yacc</h2>
+ <ul>
+  <li>In Yacc, error recovery can be performed with error productions.</li>
+  <li>To process errors at the level of a nonterminal <code>A</code>,
+      add an error production <code>A &rarr; error &alpha</code>
+      where <code>error</code> is a Yacc reserved word, and &alpha; is a string
+      of grammar symbols, possibly empty.  Yacc will generate a parser
+      including this production.</li>
+  <li>If Yacc encounters an error during parsing, it pops symbols from its stack
+      until it finds the topmost state on its stack whose underlying set of items
+      includes an item of the form
+      <dt>&nbsp;&nbsp;&nbsp;<code>A &rarr; . error &alpha</code></dt>
+      The parser then shifts the special token <code>error</code> onto the stack
+      as though it saw the token <code>error</code> on the input.</li>
+  <li>If &alpha; is not empty, Yacc skips ahead on the input looking for a
+      substring that can be "reduced" to &alpha; on the stack. Now the parser
+      will have <code>error &alpha;</code> on top of its stack, which it will
+      reduce to <code>A</code>. The parser then resumes normal parsing.</li>
+  <li>Example: See Fig. 4.61, p. 296.  This yacc specification contains
+      a translation rule</li>
+  <pre><code>
+      lines : error '\n'  { yyerror("reenter previous line:"); yyerrok; }
+  </code></pre>
+  <dt>On encountering an error, the parser starts popping symbols from
+      its stack until it encounters a state with a shift action on <code>error</code>.
+      The parser shifts the token <code>error</code> on to the stack and
+      then skips ahead in the input until it finds a newline which it shifts
+      onto the stack.  The parser reduces <code>error '\n'</code> to
+      <code>lines</code> and emits the error message "reenter previous line:".
+      The special Yacc routine <code>yyerrok</code> resets the parser to its
+      normal mode of operation.</li>
+ </ul>
+
+ <h2>3. Syntax-Directed Definitions</h2>
+ <ul>
+  <li>The syntax analyzer translates its input token stream into an intermediate
+      language representation of the source program, usually an abstract
+      syntax tree.</li>
+
+  <li>A syntax-directed definition can be used to specify this translation.</li>
+
+  <li>An SDD is a context-free grammar with semantic rules attached to the productions.</li>
+
+  <li>The semantic rules define values for attributes associated with the
+      nonterminal symbols of the productions. These values can be computed by
+      creating a parse tree for the input and then making a sequence of
+      passes over the parse tree, evaluating some or all of the rules on each
+      pass.</li>
+ </ul>
+
+ <h2>4. Synthesized and Inherited Attributes</h2>
+ <ul>
+  <li>Attributes are values attached to the nodes of a parse tree.</li>
+  <li><i>Synthesized attributes</i>
+      are values that can be computed bottom-up in the parse tree.
+      The identifiers $$, $1, $2, etc., in Yacc actions are
+      synthesized attributes. Synthesized attributes can be
+      easily computed by a shift-reduce parser that keeps the
+      values of the attributes on the parsing stack.
+      See Fig. 5.19, p. 325.</li>
+  <li><i>Inherited attributes</i> are values that can be computed
+      top-down in the parse tree.</li>
+ </ul>
+
+ <h2>5. SDD for Binary-to-Decimal Translation</h2>
+ <ul>
+  <li>Here is an SDD translating signed bit strings
+      into decimal numbers. The attributes, <code>BNum.val</code>,
+      <code>Sign.val</code>, <code>List.val</code>, and
+      <code>Bit.val</code>, are all synthesized attributes that
+      represent integers.</li>
+  <pre><code>
+   BNum &#8594; Sign List      { BNum.val = Sign.val × List.val }
+   Sign &#8594; +              { Sign.val = +1 }
+   Sign &#8594; -              { Sign.val = -1 }
+   List &#8594; List<sub>1</sub> Bit      { List.val = 2 × List<sub>1</sub>.val + Bit.val }
+   List &#8594; Bit            { List.val = Bit.val }
+   Bit  &#8594; 0              { Bit.val = 0 }
+   Bit  &#8594; 1              { Bit.val = 1 }
+  </code></pre>
+
+  <li>Same example in Yacc:</li>
+  <pre><code>
+   BNum : Sign List      { $$ = $1 * $2; }
+        ;
+   Sign : '+'            { $$ = +1; }
+        | '-'            { $$ = -1; }
+        ;
+   List : List Bit       { $$ = 2*$1 + $2; }
+        | Bit
+        ;        
+   Bit  : '0'            { $$ = 0; }
+        | '1'            { $$ = 1; }
+        ;
+  </code></pre>
+ </ul>
+
+ <h2>6. From Arithmetic Expressions into Syntax Trees</h2>
+ <ul>
+  <li>Here is a Yacc program that translates arithmetic expressions
+      into syntax trees. The function <code>mkleaf(op, left, right)</code>
+      returns a pointer to a node with three fields:
+      the first labeled <code>op</code>, the second a pointer
+      to a left subtree, and the third a pointer to a right subtree.
+      <code>mkleaf(num, value)</code> returns a pointer to a node
+      with two fields, the first labeled <code>num</code> and the
+      second its value.</li>
+
+  <pre><code>
+   E : E '+' T      { $$ = mknode('+', $1, $3); }
+     | T
+     ;
+   T : T '*' F      { $$ = mknode('*', $1, $3); }
+     | T
+     ;
+   F : '(' E ')'    { $$ = $2; }
+     | num          { $$ = mkleaf('num', $1); }
+     ;
+  </code></pre>
+ </ul>
+
+ <h2>6. Reading</h2>
+ <ul>
+  <li>ALSU: Sections 4.9, 5.1-5.3</li>
+ </ul><br>
+
+
+<hr>
+<address><a href="mailto:aho@cs.columbia.edu">aho@cs.columbia.edu</a></address>
+
+</body></html>

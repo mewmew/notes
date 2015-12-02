@@ -1,0 +1,77 @@
+<html><head><title>Lecture 7: February 13, 2008</title></head><body>
+ <h1>COMS W4115<br>
+  Programming Languages and Translators<br>
+  Lecture 7: Implementing a Lexical Analyzer<br>
+  February 13, 2008
+ </h1>
+
+ <h2>Lecture Outline</h2>
+ <ol>
+  <li>Review</li>
+  <li>Finite automata</li>
+  <li>Converting a regular expression to an NFA</li>
+  <li>Converting an NFA to a DFA</li>
+  <li>Simulating an NFA</li>
+ </ol>
+
+ <h2>1. Review</h2>
+ <ul>
+  <li>Issues for a the lexical analyzer
+  <li>Tokens/patterns/lexemes/attributes</li>
+  <li>Specifying a lexical analyzer with Lex</li>
+  <li>Creating a lexical processor with Lex</li>
+ </ul>
+
+ <h2>2. Finite Automata</h2>
+ <ul>
+  <li>A nondeterministic finite automaton (NFA) consists of</li>
+   <ul>
+    <li>A finite set of states <i>S</i>.</li>
+    <li>An input alphabet consisting of a finite set of symbols &Sigma;.</li>
+    <li>A transition function &delta; that maps <i>S</i> &times; (&Sigma &cup; {&epsilon;})
+        to subsets of <i>S</i>. This transition function can be represented
+        by a transition graph in which the nodes are labeled by states
+        and there is a directed edge labeled <i>a</i> from node <i>w</i> to node <i>v</i>
+        if &delta(<i>w</i>, <i>a</i>) contains <i>v</i>.</li>
+    <li>An initial state <i>s</i><sub>0</sub> in <i>S</i>.</li>
+    <li><i>F</i>, a subset of <i>S</i>, called the final (or accepting) states.</li>
+   </ul>
+  <li>An NFA accepts an input string <i>x</i> if there is a path in the transition
+      graph from the initial state to a final state that spells out <i>x</i>.
+  <li>The language defined by an NFA is the set of strings accepted by the NFA.</li>
+  <li>A deterministic finite automaton (DFA) is an NFA in which</li>
+  <ol>
+   <li>There are no &epsilon; moves, and</li>
+   <li>For each state <i>s</i> and input symbol <i>a</i> there is exactly one transition
+       out of <i>s</i> labeled <i>a</i>.</li>
+ </ul>
+
+ <h2>3. Converting a Regular Expression to an NFA</h2>
+ <ul>
+  <li>The McNaughton-Yamada-Thompson algorithm: Algorithm 3.23, pp. 159-163.</li>
+ </ul>
+
+    
+ <h2>4. Converting an NFA to a DFA</h2>
+ <ul>
+  <li>The subset construction: Algorithm 3.20, ALSU, p. 153.</li>
+ </ul>
+
+
+ <h2>5. Simulating an NFA</h2>
+ <ul>
+  <li>Two-stack simulation of an NFA: Algorithm 3.22, pp. 156-159.</li>
+ </ul>
+
+
+ <h2>6. Reading Assignment</h2>
+ <ul>
+  <li>Read Chapter 3, all sections except 3.9.</li>
+ </ul><br>
+
+
+
+<hr>
+<address><a href="mailto:aho@cs.columbia.edu">aho@cs.columbia.edu</a></address>
+
+</body></html>

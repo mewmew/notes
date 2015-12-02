@@ -1,0 +1,153 @@
+<html><head><title>Lecture 22, April 16, 2008</title></head><body>
+ <h1>COMS W4115<br>
+  Programming Languages and Translators<br>
+  Lecture 22: Optimization of Basic Blocks<br>
+  April 16, 2008
+ </h1>
+
+ <h2>Lecture Outline</h2>
+ <ol>
+  <li>Review</li>
+  <li>Instruction selection</li>
+  <li>Optimization of basic blocks</li>
+  <li>Order of evaluation</li>
+ </ol>
+
+ <h2>1. Review</h2>
+ <ul>
+  <li>Issues in code generation</li>
+  <li>The target machine</li>
+  <li>Basic blocks and flow graphs</li>
+ </ul>
+
+ <h2>2. Instruction Selection</h2>
+ <ul>
+  <li>Issues</li>
+  <ul>
+   <li>Level of the IR</li>
+   <li>Nature of the instruction set architecture</li>
+   <li>Desired quality of the generated code</li>
+  </ul>
+  <li>Target machine</li>
+  <ul>
+   <li><i>n</i> general-purpose registers</li>
+   <li>Instructions: load, store, compute, jump, conditional jump</li>
+   <li>Various addressing modes:</li>
+   <ul>
+    <li>indexed address</li>
+    <li>integer indexed by a register</li>
+    <li>indirect addressing</li>
+    <li>immediate constant</li>
+   </ul>
+   <li>Example 1: for <code>x = y + z</code> we can generate</li>
+   <pre><code>
+   LD  R0, y      // R0 = y
+   ADD R0, R0, z  // R0 = R0 + z
+   ST  x, R0      // x  = R0
+   </code</pre>
+
+   <li>Example 2: for <code>b = a[i]</code> we can generate</li>
+   <pre><code>
+   LD  R1, i      // R1 = i
+   MUL R1, R1, 8  // R0 = R0 + 8
+   LD  R2, a(R1)  // R2 = contents(a + contents(R1))
+   ST  b, R2      // x  = R2
+   </code</pre>
+
+   <li>Example 3: for <code>*p = y</code> we can generate</li>
+   <pre><code>
+   LD  R1, p      // R1 = p
+   LD  R2, y      // R2 = y
+   ST  0(R1), R2  // contents(0 + contents(R1)) = R2
+   </code</pre>
+  </ul>
+ </ul>
+
+ <h2>3. Optimization of Basic Blocks</h2>
+ <ul>
+  <li>DAGs can be used to find local common subexpressions in basic blocks.</li>
+  <li>See Example 8.10, p. 534.</li>
+  <li>Algebra can be used to find additional common subexpressions.</li>
+  <li>See Example 8.11, p. 535.</li>
+  <li>Peephole optimization is done by examining a sliding window of
+      target instructions and whenever possible, replacing an instruction
+      sequence within the peephole by a shorter or faster sequence.</li>
+  <li>Some common peephole optimizations:</li>
+  <ul>
+   <li>Elimination of redundant loads and stores</li>
+   <ul>
+    <li>Example: A straightforward code generator might produce for
+        <pre><code>a = b + c
+d = a + e</code></pre>
+    <dt>the code sequence</dt>
+    <pre><code>
+    LD  R0, b      // R0 = b
+    ADD R0, R0, c  // R0 = R0 + c
+    ST  a, R0      // a  = R0
+    LD  R0, a      // R0 = a
+    ADD R0, R0, e  // R0 = R0 + e
+    ST  d, R0      // d  = R0
+    </code</pre>
+    <dt>A peephole optimizer can eliminate the fourth instruction which is
+        a redundant load.</li><br>
+   </ul>
+   <li>Flow-of-control optimization</li>
+   <ul>
+    <li>Example: A peephole optimizer can eliminate a jump to a jump:</li>
+    <pre><code>
+        goto L1                  goto L2
+           .
+           .         &rArr;
+           .
+    L1: goto L2              L1: goto L2
+    </code</pre>
+   </ul>
+
+   <li>Algebraic simplification</li>
+   <ul>
+    <li>Example: A peephole optimizer can remove instructions that have no effect
+        such as <code>a = a + 0</code> or <code>a = a * 1</code>.</li>
+    </ul><br>
+
+   <li>Reduction in strength</li>
+   <ul>
+    <li>Example: A peephole optimizer can replace expensive operations
+        by equivalent cheaper ones such as <code>a ^ 2</code> by <code>a * a</code>
+        or <code>a * 2</code> by <code>a + a</code>.</li>
+   </ul><br>
+
+   <li>Use of machine idioms</li>
+   <ul>
+    <li>Example: A peephole optimizer can replace a long sequence of machine
+        instructions by an equivalent single instruction, for example, using
+        a special instruction such as <code>INC i</code> for</li>
+
+    <pre><code>
+    LD  R0, i      // R0 = i
+    ADD R0, R0, 1  // R0 = R0 + 1
+    ST  i, R0      // 1  = R0
+    </code</pre>
+   </ul>
+  </ul>
+ </ul>
+
+ 
+ <h2>4. Order of Evaluation</h2>
+ <ul>
+  <li>Order of evaluation of the nodes in an expression dag or expression tree can
+      affect the number of registers required to evaluate the expression.</li>
+  <li>Sethi-Ullman algorithm (pp. 567-572) can be used to label the nodes of an
+      expression tree with Ershov numbers to produce machine code with the minimum
+      number of spills (storing the contents of a register to a temporary memory location
+      so the register can be used for another computation).</li>
+ </ul>
+
+
+ <h2>5. Reading</h2>
+ <ul>
+  <li>ALSU, Sections 8.5-8.7, 8.10</li>
+ </ul><br>
+
+<hr>
+<address><a href="mailto:aho@cs.columbia.edu">aho@cs.columbia.edu</a></address>
+</body></html>

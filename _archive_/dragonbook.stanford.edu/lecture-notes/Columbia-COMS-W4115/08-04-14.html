@@ -1,0 +1,118 @@
+<html><head><title>Lecture 21, April 14, 2008</title></head><body>
+ <h1>COMS W4115<br>
+  Programming Languages and Translators<br>
+  Lecture 21: Code Generation<br>
+  April 14, 2008
+ </h1>
+
+ <h2><a href="08-04-14_HW2.html">Homework assignment #2 is due
+     April 21, 2008.</a></h2>
+
+ <h2>Lecture Outline</h2>
+ <ol>
+  <li>Review</li>
+  <li>Issues in code generation</li>
+  <li>The target machine</li>
+  <li>Basic blocks and flow graphs</li>
+  </ol>
+
+
+ <h2>1. Review</h2>
+ <ul>
+  <li>Storage-allocation strategies</li>
+  <li>Activation trees and records</li>
+  <li>Parameter passing mechanisms</li>
+  <li>Calling sequences</li>
+ </ul>
+
+ <h2>2. Issues in Code Generation</h2>
+ <ul>
+  <li>Position of the code generator</li>
+  <li>Desired properties of a code generator</li>
+  <ul>
+   <li>The target program must preserve the semantic meaning of the
+       source program.</li>
+   <li>The target program should make efficient use of the target
+       machine's resources.</li>
+   <li>The code generator itself should be efficient.</li>
+  </ul>
+  <li>Challenges in code generation</li>
+  <ul>
+   <li>The problem of optimal code generation is undecidable.</li>
+   <li>Many subproblems in code generation, such as optimal register
+       allocation, are computationally intractable.</li>
+   <li>The design of a good code generator reverts to the problem of
+       designing good heuristics.</li>
+  </ul>
+  <li>Primary tasks of a code generator</li>
+  <ul>
+   <li>Instruction selection</li>
+   <li>Register allocation</li>
+   <li>Evaluation order</li>
+  </ul>
+ </ul>
+
+
+ <h2>3. The Target Machine</h2>
+ <ul>
+  <li>Reduced instruction set machines (RISC)</li>
+  <ul>
+   <li>many registers</li>
+   <li>three-address instructions</li>
+   <li>simple addressing modes</li>
+   <li>simple instruction set architecture</li>
+  </ul>
+  <li>Complex instruction set machines (CISC)</li>
+  <ul>
+   <li>few registers</li>
+   <li>two-address instructions</li>
+   <li>variety of addressing modes</li>
+   <li>several register classes</li>
+   <li>variable-length instructions</li>
+   <li>instructions with side effects</li>
+  </ul>
+  <li>Stack-based machines</li>
+  <ul>
+   <li>push operands onto stack</li>
+   <li>perform operations on operands at top of stack</li>
+   <li>stack kept in registers</li>
+   <li>model for Java Virtual Machine</li>
+  </ul>
+ </ul>
+
+ <h2>4. Basic blocks and Flow Graphs</h2>
+ <ul>
+  <li>A basic block is a maximal sequence of consecutive three-address
+     instructions such that</li>
+  <ol>
+   <li>The flow of control can only enter the basic block throught the
+       first instruction in the block.</li>
+   <li>Control will leave the block without halting or branching
+       except possibly at the last instruction in the block.</li>
+  </ol>
+  <li>A flow graph for the basic blocks of an intermediate program
+      can be constructed as follows:</li>
+  <ul>
+   <li>The basic blocks are the nodes of the flow graph.</li>
+   <li>There is an edge from block B to block C iff it is possible
+       for the first instruction in C to immediately follow the last
+       instruction in B.</li>
+  </ul>
+  <li>A set of nodes L in a flow graph is a loop if</li>
+  <ol>
+   <li>There is a node in L called the loop entry with the property
+       that no other node in L has a predecessor outside L.</li>
+   <li>Every node in L has a nonempty path completely within L to
+       the entry of L.</li>
+  </ol>
+ </ul>
+
+ <h2>5. Reading</h2>
+ <ul>
+  <li>ALSU, Sections 8.1-8.5</li>
+ </ul><br>
+
+<hr>
+<address><a href="mailto:aho@cs.columbia.edu">aho@cs.columbia.edu</a></address>
+
+</body></html>

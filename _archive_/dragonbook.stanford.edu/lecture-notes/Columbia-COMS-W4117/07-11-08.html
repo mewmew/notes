@@ -1,0 +1,104 @@
+<html><head><title>Lecture 19: November 8, 2007</title></head><body>
+ <h1>COMS W4117<br>
+  Compilers and Translators:<br>
+  Software Verification Tools<br>
+  Lecture 19: Binary Decision Diagrams<br>
+  November 8, 2007
+ </h1>
+
+ <h2>Lecture Outline</h2>
+ <ol>
+  <li>Review</li>
+  <li>Pointer analysis</li>
+  <li>Binary decision diagrams</li>
+ </ol>
+ <br><br>
+
+ <h2>1. Review</h2>
+ <ul>
+  <li>Interprocedural analysis</li>
+  <li>Datalog</li>
+ </ul>
+ <br><br>
+  
+
+ <h2>2. Pointer Analysis</h2>
+ <ul>
+  <li>In C, pointer-alias analysis is complicated because C allows
+      arbitrary computations on pointers.</li>
+  <li>In Java, virtual methods can cause method invocations to be
+      indirect.</li>
+  <li>Flow-insensitive analysis ignores control flow.  Its advantage is
+      that it reduces the size of the representation of the results and
+      it converges faster than a flow-sensitive analysis.  Its disadvantage
+      is that the points-to information can overestimate what
+      variables can point to.  See Example 12.22, p. 936.</li>
+  <li>For a simple example of a flow-insensitive pointer-alias analysis
+      formulated in Datalog see Section 12.4.4, pp. 937-940.</li>
+ </ul>
+ <br><br>
+
+
+ <h2>3. Binary Decision Diagrams</h2>
+ <ul>
+  <li>A binary decision diagram (BDD) represents a boolean function <i>f</i>
+      by a rooted directed acyclic graph (DAG).</li>
+  <ul>
+   <li>Each interior node is labeled by a variable of the function.</li>
+   <li>At the bottom of the DAG are two leaves, one labeled 0 the other 1.</li>
+   <li>Each interior node <i>v</i> has two edges to children, one labeled "low"
+       (corresponding to the case where <i>v</i> = 0) the other labeled "high"
+       (corresponding to the case where <i>v</i> = 1).</li>
+   <li>Given a truth assignment for the variables in <i>f</i>, we can determine the
+       value of <i>f</i> for that truth assignment by starting at the root of the
+       BDD and following the edge from each interior node corresponding
+       to the value of the variable representing by that node until we
+       are at a leaf.  If it is the 0 leaf, then <i>f</i> has the value 0 for
+       that truth assignment; if it is the 1 leaf, then <i>f</i> has the value 1.</li>
+  </ul>
+  <li>An ordered BDD is one in which there is a linear order on the
+      variables represented by the interior nodes.  Whenever there is an
+      edge from a parent node <i>v</i> to a child labeled <i>w</i>,
+      then <i>v</i> comes before
+      <i>w</i> in that linear order.</li>
+ </ul>
+ <br><br>
+
+ <h2>4. Transformations on BDDs</h2>
+ <ul>
+  <li>Two transformations can be used to reduce the size of a BDD:</li>
+  <ol>
+   <li>If an interior node <i>v</i> has both its high and low edges go to the
+       same node <i>w</i>, then we may shortcircuit <i>v</i> by having the edges entering
+       <i>v</i> go directly to <i>w</i>.</li>
+   <li>If two nodes <i>v</i> and <i>w</i> have low edges that go to the same node
+       <i>x</i>
+       and high edges that go to the same node <i>y</i>, then we may merge
+       <i>v</i> and <i>w</i>.
+       Edges entering <i>v</i> and <i>w</i> now enter the merged node.</li>
+  </ol>
+  <li>We can obtain a canonical BDD for a boolean formula <i>f</i> by applying
+      these two transformations until they cannot be applied any more.</li>
+  <li>Note that the canonical BDD is dependent on the linear ordering given
+      to the variables.</li>
+  <li>Finding a linear ordering that minimizes the canonical BDD is an
+      NP-complete problem.  Various heuristics have been developed that
+      find small canonical forms for many BDDs arising in practice.</li>
+  <li>Given two BDDs <i>a</i> and <i>b</i> for boolean functions <i>f</i>
+      and <i>g</i>,
+      we can construct a BDD for the logical OR of <i>f</i> and <i>g</i>
+      by combining the two BDDs <i>a</i> and <i>b</i>.
+      See Algorithm 12.29, p. 956, for details.</li>
+ </ul>
+
+ <h2>5. Reading</h2>
+  <ul>
+   <li>ALSU, Sects. 12.4-12.7.</li>
+  </ul>
+  <br>
+  
+
+
+<hr>
+<address><a href="mailto:aho@cs.columbia.edu">aho@cs.columbia.edu</a></address>
+</body></html>

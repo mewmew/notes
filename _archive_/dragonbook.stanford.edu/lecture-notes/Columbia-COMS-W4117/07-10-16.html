@@ -1,0 +1,258 @@
+<html><head><title>Lecture 12: October 16, 2007</title></head><body>
+ <h1>COMS W4117<br>
+  Compilers and Translators:<br>
+  Software Verification Tools<br>
+  Lecture 12: Interprocedural Analysis<br>
+  October 16, 2007
+ </h1>
+
+ <h2>Lecture Outline</h2>
+ <ol>
+  <li>Review</li>
+  <li>Intraprocedural vs. interprocedural analysis</li>
+  <li>Call graphs</li>
+  <li>Context-sensitive vs. context-insensitive analysis</li>
+  <li>Call strings</li>
+  <li>Cloning-based context-sensitive analysis</li>
+  <li>Summary-based context-sensitive analysis</li>
+ </ol>
+ <br><br>
+
+ <h2>1. Review</h2>
+ <ul>
+  <li>Program dependency graphs</li>
+  <li>Context-free language reachability</li>
+  <li>Pushdown systems</li>
+  <li>Reachability in a pushdown system</li>
+ </ul>
+ <br><br>
+
+ <h2>2. Intraprocedural vs. interprocedural analysis</h2>
+ <ul>
+  <li>Intraprocedural analysis: analysis is done one procedure at a time.</li>
+  <ul>
+   <li>Assumes procedures invoked may</li>
+   <ul>
+    <li>alter the state of all variables visible to the procedures,</li>
+    <li>create all possible side effects.</li>
+   </ul>
+   <li>Intraprocedural analysis is relatively simple but often imprecise.</li>
+  </ul><br>
+  <li>Interprocedural analysis: analysis is done across an entire program.</li>
+  <ul>
+   <li>One common technique is to inline procedures where possible.</li>
+   <li>Pointer alias analysis is key to precise interprocedural analysis.</li>
+   <li>Many commercial and academic static analysis tools use interprocedural analysis.
+       See
+   <ul>
+    <li><a href="http://www.spinroot.com/static/">Spinroot: Static Source Code Analysis Tools</a></li>
+    <li><a href="http://samate.nist.gov/index.php/Source_Code_Analyzers">
+       NIST: Source Code Security Analyzers</a></li>
+    <li><a href="http://en.wikipedia.org/wiki/List_of_tools_for_static_code_analysis">
+       Wikipedia: Tools for Static Code Analysis</a></li>
+   </ul>
+    <dt>for extensive lists of such tools.</dt>
+  </ul>
+ </ul><br><br>
+
+ <h2>3. Call Graphs</h2>
+ <ul>
+  <li>A <i>call graph</i> for a program is a set of nodes and edges such that</li>
+  <ol>
+   <li>There is one node for each procedure in the program.</li>
+   <li>There is one node for each call site in the program
+       (place where a procedure is invoked).</li>
+   <li>If call site c may call procedure p, then there is an edge from c to p.</li>
+  </ol>
+  <li>Consider the following C program:</li>
+    <pre><code>
+
+     int (*pf)(int);
+
+     int fun1(int x) {
+       if (x < 10)
+c1:       return (*pf)(x+1);
+       else
+          return x;
+     }
+
+     int fun2(int y) {
+        pf = &fun1;
+c2:     return (*pf)(y);
+     }
+
+     void main() {
+        pf = &fun2;
+c3:     (*pf)(5);
+     }
+
+    </code></pre>
+
+  <li>Is this an ISO99-compliant C program?  Answer: No; main should return an int.</li>
+  <li>What can pf point to? fun1, fun2?</li>
+ </ul>
+ <br><br>
+  
+
+ <h2>4. Context-sensitive vs. Context-insensitive Analysis</h2>
+ <ul>
+  <li>Context-insensitive interprocedural analysis treats each call and return
+      statement as goto operations.</li>
+  <li>We can model this kind of analysis with a super control-flow graph (like the PDG)
+      which is a control-flow graph with additional edges connecting each call
+      site to the beginning of the procedure it calls and each return statement to
+      the instruction following the call site.</li>
+  <li>A context-sensitive analysis keeps track of the context in which each
+      procedure was called.</li>
+
+    <pre><code>
+
+     for (i = 0; i < n; i++) {
+c1:    t1 = f(0);
+c2:    t2 = f(243);
+c3:    t3 = f(243);
+       X[i] = t1 + t2 + t3;
+     }
+
+     int f(int v) {
+       return (v+1);
+     }
+
+    </code></pre>
+
+  <li>A context-insensitive analysis yields that X[i] is either 3, 246, 489, or 732.</li>
+  <li>A context-sensitive analysis yields that X[i] is 489.</li>
+ </ul>
+ <br><br>
+
+
+ <h2>5. Call Strings</h2>
+ <ul>
+  <li>A calling context is defined by the contents of the entire call stack.
+      We refer to the string of call sites on the stack as the <i>call string</i>.</li>
+  <li>Consider a modification of the above program where the calls to f are now
+      calls to g, which then calls f:</li>
+
+   <pre><code>
+
+     for (i = 0; i < n; i++) {
+c1:    t1 = g(0);
+c2:    t2 = g(243);
+c3:    t3 = g(243);
+       X[i] = t1 + t2 + t3;
+     }
+
+     int g(int v) {
+c4:    return f(v);
+     }
+
+     int f(int v) {
+       return (v+1);
+     }
+
+    </code></pre>
+
+  <li>There are three calls strings to f: (c1, c4), (c2, c4), (c3, c4).</li>
+
+ </ul>
+ <br><br>
+
+ <h2>6. Cloning-based Context-sensitive Analysis</h2>
+ <ul>
+  <li>In cloning-based context-sensitive analysis we create a conceptual clone of
+      the procedure for each context of interest and then apply a context-insensitive
+      analysis to the cloned call graph.</li>
+  <li>In practice we do not clone the procedure; we use an internal data structure
+      to keep track of the analysis results on each clone.</li>
+  <li>A cloned version of the above program is shown here:</li>
+
+   <pre><code>
+
+     for (i = 0; i < n; i++) {
+c1:    t1 = g(0);
+c2:    t2 = g(243);
+c3:    t3 = g(243);
+       X[i] = t1 + t2 + t3;
+     }
+
+     int g(int v) {
+c4.1:  return f1(v);
+     }
+
+     int g(int v) {
+c4.2:  return f2(v);
+     }
+
+     int g(int v) {
+c4.3:  return f3(v);
+     }
+
+     int f1(int v) {
+       return (v+1);
+     }
+
+     int f2(int v) {
+       return (v+1);
+     }
+
+     int f3(int v) {
+       return (v+1);
+     }
+
+
+    </code></pre>
+
+ </ul>
+ <br><br>
+
+ <h2>7. Summary-based Context-sensitive Analysis</h2>
+ <ul>
+  <li>In summary-based context-sensitive analysis we create a concise description ("summary") of
+      the observable behavior of each procedure.</li>
+  <li>The purpose of the summary is to avoid reanalyzing the procedure body at each
+      invoking call site.</li>
+  <li>Each procedure is represented by a region with a single entry point.</li>
+  <li>A procedure region can be nested within several different outer regions.</li>
+  <li>The analysis has two parts:</li>
+  <ol>
+   <li>A bottom-up phase that computes a transfer function to summarize the
+       effect of a procedure.</li>
+   <li>A top-down phase that propagates caller information to compute callee results.</li>
+  </ol>
+  <li>The following program shows the result of propagating all possible
+      constant arguments to the function f in the program in section (4) above:</li>
+
+   <pre><code>
+
+     for (i = 0; i < n; i++) {
+c1:    t1 = f0(0);
+c2:    t2 = f243(243);
+c3:    t3 = f243(243);
+       X[i] = t1 + t2 + t3;
+     }
+
+     int f0(int v) {
+       return (1);
+     }
+
+     int f243(int v) {
+       return (244);
+     }
+
+    </code></pre>
+
+ </ul>
+ <br><br>
+
+
+ <h2>8. Reading</h2>
+  <ul>
+   <li>ALSU, Sect. 12.1.</li>
+  </ul>
+  <br>
+  
+
+
+<hr>
+<address><a href="mailto:aho@cs.columbia.edu">aho@cs.columbia.edu</a></address>
+</body></html>

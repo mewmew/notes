@@ -1,0 +1,85 @@
+<html><head><title>Lecture 23, April 21, 2008</title></head><body>
+ <h1>COMS W4115<br>
+  Programming Languages and Translators<br>
+  Lecture 23: Code Generation Algorithms<br>
+  April 21, 2008
+ </h1>
+
+ <h2>Lecture Outline</h2>
+ <ol>
+  <li>Review</li>
+  <li>Next-use information</li>
+  <li>A simple code generator</li>
+  <li>Optimal code generation for expression trees</li>
+ </ol>
+
+ <h2>1. Review</h2>
+ <ul>
+  <li>Instruction selection</li>
+  <li>Optimization of basic blocks</li>
+  <li>Order of evaluation</li>
+ </ul>
+
+ <h2>2. Next-use Information</h2>
+ <ul>
+  <li>If there is a three-address instruction sequence of the form</li>
+  <pre><code>
+       i:  x = y + z
+
+       .
+       . no assignments to x
+       .
+
+       j:  a = x + b
+  </code></pre>
+
+  <dt>then we say statement <code>j</code> <i>uses</i> the
+      value of <code>x</code> computed at <code>i</code>.</dt>
+  <li>We also say that <code>x</code> is <i>live</i> at statement <code>i</code>.</li>
+  <li>A simple way to find next uses is to scan backward from
+      the end of a basic block keeping track for each name
+      <code>x</code> whether <code>x</code> has a next use in
+      the block and if not whether <code>x</code> is live on
+      exit from that block. See Alg. 8.7, p. 528.</li>
+ </ul>
+
+ <h2>3. A Simple Code Generator</h2>
+ <ul>
+  <li>There is a simple algorithm to generate code for a basic block.
+      It generates code for each three-address instruction in turn,
+      keeping track of what values are in what registers to avoid
+      generating redundant loads and stores.</li>
+  <li>It uses a register descriptor to keep track of what value is
+      currently in each register.</li>
+  <li>It uses an address descriptor to keep track of locations where
+      the current value of a name can be found at run time.</li>
+  <li>It uses a routine <code>getReg</code> to return a location
+      <code>L</code> to hold the value of the variable <code>x</code>
+      for a three-address instruction <code>x = y + z</code>.</li>
+  <li>See Section 8.6 (pp. 542-548) for details of the algorithm.</li> 
+ </ul>
+
+
+ <h2>4. Optimal Code Generation for Expression Trees</h2>
+ <ul>
+  <li>Assume a simple register machine with instructions of the form</li>
+  <ul>
+   <li><code>LD reg, mem</code>
+   <li><code>ST mem, reg</code>
+   <li><code>OP reg, reg, reg</code>
+  </ul>
+  <li>Label the nodes in an expression tree with Ershov numbers.</li>
+  <li>The Sethi-Ullman algorithm (Alg. 8.24, pp. 568-572) can be used
+      to generate code that minimizes the number of spills to evaluate
+      the expression tree.</li>
+ </ul>
+
+
+ <h2>5. Reading</h2>
+ <ul>
+  <li>ALSU, Sections 8.4, 8.6, 8.10</li>
+ </ul><br>
+
+<hr>
+<address><a href="mailto:aho@cs.columbia.edu">aho@cs.columbia.edu</a></address>
+</body></html>

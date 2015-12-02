@@ -1,0 +1,132 @@
+<html><head><title>Lecture 19, April 7, 2008</title></head><body>
+ <h1>COMS W4115<br>
+  Programming Languages and Translators<br>
+  Lecture 19: Arrays, Boolean Expressions, Flow of Control<br>
+  April 7, 2008
+ </h1>
+
+ <h2>Lecture Outline</h2>
+ <ol>
+  <li>Review</li>
+  <li>Assignment statements</li>
+  <li>Arrays</li>
+  <li>Boolean expressions</li>
+  <li>Flow-of-control statements</li>
+ </ol>
+
+ <h2>1. Review</h2>
+ <ul>
+  <li>Types</li>
+  <li>Type equivalence</li>
+  <li>Type inference</li>
+  <li>Type conversions</li>
+  <li>Run-time storage organization</li>
+ </ul>
+
+ <h2>2. Assignment Statements</h2>
+ <ul>
+  <li>Example assignment:  <code>a = b * -c + b * -c;</code></li>
+  <ul>
+   <li>AST</li>
+   <li>DAG</li>
+   <li>Three-address code</li>
+   <li>Stack code</li>
+  </ul>
+ </ul>
+
+ <h2>3. Arrays</h2>
+ <ul>
+  <li>Referencing a one-dimensional array</li>
+  <ul>
+   <li>In C and Java, array elements are numbered <code>0, 1,..., n-1</code>
+       for an array <code>A</code> with n elements.</li>
+   <li>Element <code>A[i]</code> begins in location <code>(base + i &times; w)</code>
+       where <code>base</code> is the relative address of the storage allocated for
+       <code>A</code> and <code>w</code> is the width of each element.</li>
+  </ul>
+  <li>Row-major order</li>
+  <li>Column-major order</li>
+  <ul>
+   <li>See Fig. 6.21, p. 382.</li>
+  </ul>
+ </ul>
+
+ <h2>4. Boolean Expressions</h2>
+ <ul>
+  <li>Boolean expressions are composed of boolean operators (&&, ||, !)
+      applied to boolean variables, relational expressions, and other
+      boolean expressions.</li>
+  <li>Short-circuit evaluation: Some languages, such as C and Java, do not require an entire boolean
+      expression to be evaluated.</li>
+  <ul>
+   <li>Given <code>x && y</code>, if <code>x</code>
+       is false, then we can conclude the entire expression is false without
+       evaluating <code>y</code>.</li>
+   <li>Given <code>x || y</code>, if <code>x</code>
+       is true, then we can conclude the entire expression is true without
+       evaluating <code>y</code>.</li>
+  </ul>
+  <li>Numerical encoding</li>
+  <ul>
+   <li>In C, the numerical value 0 represents false; a nonzero value represents true.</li>
+  </ul>
+  <li>Positional encoding</li>
+  <ul>
+   <li>The value of a boolean expression can be represented by a position in three-address
+       code, and the boolean operators can be translated into jumps.<li>
+   <li>The expression</li>
+       <pre><code>
+       if (x < 100) || x > 200 && x != y)
+         x = 0;
+       </code></pre>
+       <dt>can be translated into the following three-address instructions:</dt>
+       <pre><code>
+           if x < 100 goto L2
+           ifFalse x > 200 goto L1
+           ifFalse x != y goto L1
+       L2: x = 0
+       L1:
+       </code></pre>
+   </ul>
+ </ul>
+
+ <h2>5. Flow-of-Control Statements</h2>
+ <ul>
+  <li>Boolean expressions often appear in the context of flow-of-control statements
+      such as:</li>
+  <ul>
+   <li>If statements</li>
+   <li>If-else statement </li>
+   <li>While statements</li>
+  </ul>
+  <li>See Figs. 6.35 and 6.36 for an SDD for the translation of these statements.</li>
+  <li>For the expression</li>
+       <pre><code>
+       if (x < 100) || x > 200 && x != y)
+         x = 0;
+       </code></pre>
+       <dt>this SDD produces the following three-address instructions:</dt>
+       <pre><code>
+           if x < 100 goto L2
+           goto L3
+       L3: if x > 200 goto L4
+           goto L1
+       L4: if x != y goto L2
+           goto L1
+       L2: x = 0
+       L1:
+       </code></pre>
+       <dt>The code above can be obtained by optimizing this three-address code.</dt>
+
+ </ul>
+
+ <h2>6. Reading</h2>
+ <ul>
+  <li>ALSU, Sections 6.4, 6.6</li>
+ </ul><br>
+
+
+<hr>
+<address><a href="mailto:aho@cs.columbia.edu">aho@cs.columbia.edu</a></address>
+
+</body></html>

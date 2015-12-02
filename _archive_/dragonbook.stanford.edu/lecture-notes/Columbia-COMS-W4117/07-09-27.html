@@ -1,0 +1,101 @@
+<html><head><title>Lecture 8: September 27, 2007</title></head><body>
+ <h1>COMS W4117<br>
+  Compilers and Translators:<br>
+  Software Verification Tools<br>
+  Lecture 8: Loops in Flow Graphs<br>
+  September 27, 2007
+ </h1>
+
+ <h2>Lecture Outline</h2>
+ <ol>
+  <li>Review</li>
+  <li>Dominators</li>
+  <li>Depth-first ordering</li>
+  <li>Edges in a depth-first spanning tree</li>
+  <li>Reducible flow graphs</li>
+  <li>Natural loops</li>
+  <li>Reading</li>
+ </ol>
+ <br><br>
+
+ <h2>1. Review</h2>
+ <ol>
+  <li>Data-flow analysis frameworks</li>
+  <li>Iterative algorithm for general frameworks</li>
+  <li>Meaning of a data-flow solution</li>
+  <li>Framework for constant propagation</li>
+ </ol>
+ <br><br>
+  
+
+ <h2>2. Dominators</h2>
+ <ul>
+  <li>In a flow graph, a node d is a dominator of a node n if every path from
+      ENTRY to n goes through d.</li>
+  <li>A dominator tree is a convenient way to represent dominator information.
+      In a dominator tree, ENTRY is the root, and each node dominates only its
+      descendants in the tree.</h2>
+  <li>We can find the dominators of each node in a flow graph using an
+      iterative data-flow analysis framework.  See Alg. 9.38, p. 658.</li>
+ </ul>
+ <br><br>
+
+
+ <h2>3. Depth-First Ordering</h2>
+ <ul>
+  <li>We can perform a depth-first search to produce a depth-first ordering
+      of the nodes of a flow graph.</li>
+  <li>Recall the definitions of preorder and postorder traversals of trees.</li>
+  <li>See Alg. 9.41, pp. 660-662 for depth-first search algorithm.</li>
+  <li>The depth-first search identifies three kinds of edges in a flow graph:
+      advancing, retreating, and cross edges.</li>
+  <li>Note that u &rarr; v is a retreating edge if and only dfn[u] &ge dfn[v],
+      where dfn[u] is the depth-first number of node u.</li>
+ </ul>
+ <br><br>
+
+ <h2>4. Reducible Flow Graphs</h2>
+ <ul>
+  <li>A back edge is a retreating edge whose head dominates its tail.</li>
+  <li>A flow graph is reducible if all its retreating edges in any DFST
+      are also back edges.</li>
+  <li>Structured programming always produces programs with reducible flow graphs.</li>
+  <li>Canonical nonreducible flow graph: the "ice-cream cone".
+  <li>The depth of a flow graph is the largest number of retreating edges on any
+      cycle-free path.</li>
+ </ul>
+ <br><br>
+
+ <h2>5. Natural Loops</h2>
+ <ul>
+  <li>A natural loop in a flow graph is a set of nodes defined by a back
+      edge n &rarr; d with the properties:</li>
+  <ol>
+   <li>The node d is called the header and it is a single entry to the loop.</li>
+   <li>The loop consists of d plus all the nodes in the flow graph that can read n without going
+       through d.</li>
+  </ol>
+  <li>Given a flow graph with a back edge n &rarr; d we can construct the
+      natural loop of this back edge by performing a depth-first search on the
+      reverse flow graph starting with node n.  See Alg. 9.46, pp. 665-666.</li>
+  <li>In a reducible flow graph, we can associated a natural loop with each
+      retreating edge.</li>
+  <li>If two loops have distinct headers, then they are either disjoint
+      or one is nested within the other.  Natural loops allow us to
+      easily find the innermost loops in a reducible flow graph.</li>
+  <li>If two natural loops have the same header, we can merge the two loops into a single loop.</li>
+  </ul>
+ </ul><br><br>
+
+
+ <h2>6. Reading</h2>
+  <ul>
+   <li>ALSU: section 9.6</li>
+  </ul>
+  <br>
+  
+
+
+<hr>
+<address><a href="mailto:aho@cs.columbia.edu">aho@cs.columbia.edu</a></address>
+</body></html>

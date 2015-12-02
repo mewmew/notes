@@ -1,0 +1,165 @@
+<html><head><title>Lecture 20, April 9, 2008</title></head><body>
+ <h1>COMS W4115<br>
+  Programming Languages and Translators<br>
+  Lecture 20: Run-Time Storage Allocation<br>
+  April 9, 2008
+ </h1>
+
+ <h2>Lecture Outline</h2>
+ <ol>
+  <li>Review</li>
+  <li>Storage-allocation strategies</li>
+  <li>Activation trees and records</li>
+  <li>Parameter passing mechanisms</li>
+  <li>Calling sequences</li>
+ </ol>
+
+ <h2>1. Review</h2>
+ <ul>
+  <li>Assignment statements</li>
+  <li>Arrays</li>
+  <li>Boolean expressions</li>
+  <li>Flow-of-control statements</li>
+ </ul>
+
+ <h2>2. Storage-Allocation Strategies</h2>
+ <ul>
+  <li>Static allocation</li>
+  <ul>
+   <li>Storage for all data objects laid out at compile time.</li>
+   <li>Names are bound to storage as program is compiled.</li>
+   <li>Used in early versions of Fortran.</li>
+   <li>Recursion is restricted.</li>
+   <li>Size of all data objects must be known at compile time.</li>
+   <li>No dynamic data structures can be supported.</li>
+  </ul>
+
+  <li>Stack allocation</li>
+  <ul>
+   <li>Run-time storage is organized as a stack.</li>
+   <li>Activation records (ARs) are pushed and popped as activations begin and end.</li>
+   <li>Storage for the locals in each call is contained in the AR for that call.</li>
+   <li>Used by C and Java.<li>
+  </ul>
+
+  <li>Heap allocation</li>
+  <ul>
+   <li>Allocates and deallocates storage as needed at run time from a data area called a heap.</li>
+   <li>Necessary when a called activation outlives the caller.</li>
+   <li>Also needed when the values of local names must be retained after an activation ends.</li>
+  </ul>
+ </ul>
+
+ <h2>3. Activation Trees and Records</h2>
+ <ul>
+  <li>Consider the quicksort program in Fig. 7.2, p. 431.</li>
+  <li>The activation tree in Fig. 7.4 represents the calls made during
+      an execution of quicksort.</li>
+  <li>Note that:
+  <ul>
+   <li>The sequence of procedure calls corresponds to a preorder traversal
+       of the tree.</li>
+   <li>The sequence of returns corresponds to a postorder travseral.</li>
+   <li>The path from the root to a node <i>N</i> shows the activations
+       that are live at the time <i>N</i> is executing.</li>
+  </ul>
+  <li>Procedure calls and returns are managed by a control stack.</li>
+  <li>On each procedure call, an activation record for that procedure
+      is pushed on the stack.  When the call returns, that activation
+      record is popped from the stack.</li>
+ </ul>
+
+ <h2>4. Parameter Passing Mechanisms</h2>
+ <ul>
+  <li>Programming languages differ in how procedures get their arguments.</li>
+  <li>We use the term <i>actual parameters</i> to denote the parameters
+      used in the call of a procedure.</li>
+  <li>We use the term <i>formal parameters</i> to denote the parameters
+      used in the definition of a procedure.</li>
+
+  <li>Call by value</li>
+  <ul>
+   <li>Actual parameters are evaluated and their r-values are passed to the callee.</li>
+   <li>Used by C.</li>
+   <li>"swap" example from C</li>
+   <ul>
+    <li>Consider <code>swap1(a, b)</code>:</li>
+    <pre><code>
+      void swap1(int x, int y) {
+        int temp;
+        temp = x;
+        x = y;
+        y = temp;
+      }
+    </code></pre>
+    <li>Now consider <code>swap2(&a, &b)</code>:</li>
+    <pre><code>
+      void swap2(int *px, int *py) {
+        int temp;
+        temp = *px;
+        *px = *py;
+        *py = temp;
+      }
+    </code></pre>
+   </ul>
+  </ul>
+
+  <li>Call by reference</li>
+  <ul>
+   <li>Caller passes a pointer to the storage address of each actual parameter</li>
+   <li>If parameter is a name or an expression having an l-value, that l-value itself
+       is passed; otherwise, expression is evaluated in a new location and the address
+       of that location is passed.</li>
+   <li>Useful for passing large parameters to procedures.</li>
+   <li>Used for "ref" parameters in C++.</li>
+  </ul>
+
+  <li>Call by name</li>
+  <ul>
+   <li>Body of procedure is substituted for the call in the caller,
+       with the actual parameters substituted for the formal parameters,
+       with renaming of local names to keep them distinct.</li>
+  </ul>
+ </ul>
+
+ <h2>5. Calling Sequences</h2>
+ <ul>
+  <li>Procedure calls are implemented by calling sequences, code that allocates
+      an activation record on the control stack and enters information into its
+      fields.</li>
+  <li>A return sequence is code invoked after the call to restore the state
+      of the machine so the calling procedure can continue its execution after
+      the call.</li>
+  <li>The code in a calling sequence is usually divided between the calling
+      procedure (the "caller") and the procedure it calls (the "callee").
+  <li>Here is one example of how the caller and callee might cooperate in
+      the calling sequence:</li>
+  <ul>
+   <li>The caller evaluates the actual parameters.</li>
+   <li>The caller stores a return address and the old value of the top of
+       the stack into the callee's AR.  The caller then updates the value
+       top-of-stack pointer.</li>
+   <li>The callee saves the register values and other status information.</li>
+   <li>The callee initializes its local data and begins execution.</li>
+  </ul>
+  <li>In the return sequence:</li>
+  <ul>
+   <li>The callee places the return value in a known location on the stack.</li>
+   <li>The callee restores the value of the top-of-stack pointer to what it
+       was before the call and then branches to the return address that the
+       caller placed on the stack.</li>
+   <li>The caller knows where the return value is relative to the current
+       value of the top-of-stack pointer.</li>
+  </ul>
+ </ul>
+
+ <h2>6. Reading</h2>
+ <ul>
+  <li>ALSU, Sections 7.1, 7.2</li>
+ </ul><br>
+
+
+<hr>
+<address><a href="mailto:aho@cs.columbia.edu">aho@cs.columbia.edu</a></address>
+
+</body></html>

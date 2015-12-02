@@ -1,0 +1,124 @@
+<html><head><title>Lecture 5: September 18, 2007</title></head><body>
+ <h1>COMS W4117<br>
+  Compilers and Translators:<br>
+  Software Verification Tools<br>
+  Lecture 5: Data-Flow Analysis<br>
+  September 18, 2007
+ </h1>
+
+ <h2>Lecture Outline</h2>
+ <ol>
+  <li>Review</li>
+  <li>Introduction to data-flow analysis</li>
+  <li>Data-flow schemas</li>
+  <li>Reaching definitions</li>
+  <li>Live-variable analysis</li>
+  <li>Reading</li>
+ </ol>
+ <br>
+
+ <h2>1. Review</h2>
+ <ol>
+  <li>Flow graphs and their representation</li>
+  <li>Loops</li>
+  <li>Introduction to code optimization</li>
+
+ </ol>
+ <br>
+  
+
+
+ <h2>2. Introduction to Data-flow Analysis</h2>
+ <ul>
+  <li>Data-flow analysis</li>
+  <ul>
+   <li>Data-flow analysis refers to a collection of techniques used to
+       collect information about the flow of data along all possible execution paths of a program</li>
+   <li>The execution of a program is viewed as a series of transformations on the state
+       of the program.  Each execution of an IR statement transforms an input state to
+       an output state, where the input state is associated with the program point before
+       the statement and the output state with the program point after the statement.</li>
+   <li>In each application of data-flow analysis we associate with every program point
+       a data-flow value that represents an abstraction of the set of all program states
+       that can be observed for that point.</li>
+   <li>We denote the data-flow values before and after each statement s by IN[s] and OUT[s],
+       respectively.</li>
+   <li>The data-flow problem is to find a solution for the IN and OUT sets for all
+       statements subject to the constraints imposed by the semantics of the statements
+       ("transfer functions") and those based on the flow of control.</li>
+  </ul>
+ </ul>
+ <br>
+
+ <h2>3. Data-Flow Schemas</h2>
+ <ul>
+  <li>For forward data-flow problems</li>
+   <ul>
+    <li>For a basic block B, OUT[B] = f<sub>B</sub>(IN[B]), where f<sub>B</sub>
+        is the composition of the transfer functions for the individual statements in B.</li>
+    <li>The constraint for IN[B] is that IN[B] is the union of OUT[P] over all predecessors P
+        of B.</li>
+   </ul>
+  <li>For backward data-flow problems</li>
+   <ul>
+    <li>IN[B] = f<sub>B</sub>(OUT[B]).</li>
+    <li>The constraint for OUT[B] is that OUT[B] is the union of IN[S]
+        over all successors P of B.</li>
+   </ul>
+ </ul>
+ <br>
+
+
+ <h2>4. Reaching Definitions</h2>
+ <ul>
+  <li>Reaching definitions is the prototypical forward data-flow analysis problem.</li>
+  <li>A definition of a variable x is a statement that assigns, or may assign, a value
+      to x. Because of procedure parameters, arrays, and indirect accesses it is not always easy
+      to tell if a statement is referring to a particular variable x.</li>
+  <li>A definition d reaches a point p if there is a path from the point immediately
+      following d to p such that d is not killed along that path.</li>
+  <li>We kill a definition of a variable x if there is another definition of x
+      anywhere along the path (which may have loops in it).</li>
+  <li>Example: the definition d: u = v+w <i>generates</i> a definition d of variable u and <i>kills</i>
+      all the other definitions in the program that define variable u.</li>
+  <li>Transfer equations for reaching definitions, pp. 603-605.</li>
+  <li>Control-flow equations, p. 605.</li>
+  <li>Iterative algorithm for reaching definitions: See Alg. 9.11, p. 606.</li>
+ </ul>
+ <br><br>
+
+ <h2>5. Live-Variable Analysis</h2>
+ <ul>
+  <li>Live-variable analysis is the prototypical backward data-flow analysis problem.</li>
+  <li>In live-variable analysis we want to know for variable x and point p
+      whether the value of x at p could be used along some path in the flow graph
+      starting at p.  If so, we say x is <i>live</i> at p; otherwise, x is <i>dead</i> at p.</li>
+  <li>Live-variable analysis is useful for register allocation.</li>
+  <li>We define def<sub>B</sub> as the set of variables defined in block B prior
+      to any use of that variable in B.</li>
+  <li>We define use<sub>B</sub> as the set of variables whose values may be used in B prior
+      to any definition of that variable.</li>
+  <li>Transfer equations and control-flow equations for live-variable analysis, pp. 608-610.</li>
+  <li>Control-flow equations, p. 605.</li>
+  <li>Iterative algorithm for live-variable analysis: See Alg. 9.14, p. 610.</li>
+ </ul>
+ <br><br>
+
+
+ <h2>6. Reading</h2>
+  <ul>
+   <li>ALSU: section 9.2</li>
+   <li>See <a href="http://mtc.epfl.ch/software-tools/blast/">
+          http://mtc.epfl.ch/software-tools/blast/</a>, 
+       <a href="http://www.cs.indiana.edu/~lepike/talks/sal.pdf">
+          http://www.cs.indiana.edu/~lepike/talks/sal.pdf</a> and
+       <a href="http://www.cs.cmu.edu/~chaki/magic/">
+          http://www.cs.cmu.edu/~chaki/magic/</a>
+       for more suggestions of software verification tools.</li> 
+   </ul>
+  
+
+
+<hr>
+<address><a href="mailto:aho@cs.columbia.edu">aho@cs.columbia.edu</a></address>
+</body></html>

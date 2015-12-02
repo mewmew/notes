@@ -1,0 +1,184 @@
+<html><head><title>Lecture 9: February 20, 2008</title></head><body>
+ <h1>COMS W4115<br>
+  Programming Languages and Translators<br>
+  Lecture 9: Top-Down Parsing<br>
+  February 20, 2008
+ </h1>
+
+ <h2>Lecture Outline</h2>
+ <ol>
+  <li>Review</li>
+  <li>Context-free grammars</li>
+  <li>Top-down parsing</li>
+  <li>Transformations on grammars</li>
+  <li>Reading and other</li>
+ </ol>
+
+ <h2>1. Review</h2>
+ <ul>
+  <li>Role of the parser</li>
+  <li>Context-free grammars</li>
+  <li>Derivations and parse trees</li>
+  <li>Ambiguity</li>
+  <li>Yacc: a language for specifying translators</li>
+ </ul>
+
+ <h2>2. Context-Free Grammars</h2>
+ <ul>
+  <li>Examples</li>
+  <ul>
+   <li>All strings of the form <i>n</i> a's followed by <i>n</i> b's:</li>
+   <dt>CFG: <code>S &#8594; aSb | &#949;</code></dt>
+
+   <li>All strings of balanced parentheses:</li>
+   <dt>CFG: <code>S &#8594; (S)S | &#949;</code></dt>
+
+   <li>All strings of a's and b's with the same number of a's as b's:</li>
+   <dt>CFG: <code>S &#8594; aSbS | bSaS | &#949;</code></dt>
+   <dt>Note that this grammar is ambiguous.</dt>
+
+   <li>If- and if-else statements:</li>
+   <pre><code>
+      stmt &#8594; if ( expr ) stmt else stmt
+           | if (expr) stmt
+           | other
+   </code></pre>
+   <dt>Note that this grammar is ambiguous.</dt>
+
+   <li>Arithmetic expressions:</li>
+   <pre><code>
+      expr &#8594;   expr + term
+           |   term
+      term &#8594;   term * factor
+           |   factor
+      factor &#8594; ( expr )
+           |   number
+   </code></pre>
+  </ul>
+ </ul>
+
+
+ <h2>3. Top-down Parsing</h2>
+ <ul>
+  <li>Top-down parsing consists of constructing a parse tree
+      for an input string starting from the root and creating
+      the nodes of the parse tree in preorder.</li>
+  <li>Equivalently, top-down parsing consists of finding a
+      leftmost derivation for the input string.</li>
+  <li>Consider grammar <i>G</i>:</li>
+    <pre><code>
+      S &#8594; ( S ) S | &#949;
+    </code></pre>
+  <li>Leftmost derivation for (()()):</li>
+   <pre><code>
+      S &#8658; ( S ) S
+
+        &#8658; ( ( S ) S ) S
+
+        &#8658; ( ( ) S ) S
+
+        &#8658; ( ( ) ( S ) S ) S
+
+        &#8658; ( ( ) (  ) S ) S
+
+        &#8658; ( ( ) (  ) ) S
+
+        &#8658; ( ( ) (  ) )
+  </code></pre>
+
+  <li>Recursive-descent parsing</li>
+  <ul>
+   <li>Recursive-descent parsing is a top-down method of syntax
+       analysis in which a set of recursive procedures is used
+       to process the input string.</li>
+   <li>One procedure is associated with each nonterminal of
+       the grammar.  See Fig. 4.13, p. 219.</li>
+   <li>The sequence of successful procedure calls defines the parse tree.</li>
+  </ul>
+
+  <li>Nonrecursive predictive parsing</li>
+  <ul>
+   <li>A nonrecursive predictive parser uses an explicit stack.
+   <li>See Fig. 4.19, p. 227, for a model of table-driven predictive
+       parser.</li>
+
+   <li>Parsing table for <i>G</i>:</li>
+
+    <pre><code>
+                        Input Symbol
+   Nonterminal      (         )        $
+
+       S        S &#8594; (S)S    S &#8594; &#949;    S &#8594; &#949;
+   </code></pre>
+
+   <li>Moves made by predictive parser on input (()()).</li>
+
+    <pre><code>
+       Stack       Input      Output
+        $S         (()())$
+        $S)S(      (()())$   S &#8594; (S)S
+        $S)S        ()())$
+        $S)S)S(     ()())$   S &#8594; (S)S
+        $S)S)S       )())$
+        $S)S)        )())$   S &#8594; &#949;
+        $S)S          ())$
+        $S)S)S(       ())$   S &#8594; (S)S
+        $S)S)S         ))$
+        $S)S)          ))$   S &#8594; &#949;
+        $S)S            )$
+        $S)             )$   S &#8594; &#949;
+        $S               $
+        $                $   S &#8594; &#949;        
+   </code></pre>
+  </ul>
+ </ul>
+
+ <h2>4. Transformations on Grammars</h2>
+ <ul>
+  <li>Two common language-preserving transformations are often applied to
+      grammars to try to make them parsable by top-down methods.
+      These are elimination of left recursion and left factoring.</li>
+  <li>Eliminating left recursion:</li>
+  <ul>
+   <li>Replace</li>
+   <pre><code>
+      expr &#8594;  expr + term
+           |  term
+   </code></pre> by
+
+    <pre><code>
+      expr  &#8594;  term expr'
+
+      expr' &#8594;  + term expr'
+            |  &#949;
+   </code></pre>
+  </ul>
+
+  <li>Left factoring:</li>
+  <ul>
+   <li>Replace</li>
+   <pre><code>
+      stmt &#8594; if ( expr ) stmt else stmt
+           | if (expr) stmt
+           | other
+   </code></pre> by
+   <pre><code>
+      stmt  &#8594; if ( expr ) stmt stmt'
+            | other
+
+      stmt' &#8594; else stmt
+            | &#949;
+   </code></pre>
+  </ul>
+ </ul>
+
+ <h2>5. Reading and Other</h2>
+ <ul>
+  <li>Language whitepapers are due in class February 27, 2008.</li>
+  <li>Try doing exercises 4.2.1, 4.2.2, 4.2.3, 4.3.1.</li>
+  <li>Read ALSU, Sections 4.3, 4.4.</li>
+ </ul><br>
+
+<hr>
+<address><a href="mailto:aho@cs.columbia.edu">aho@cs.columbia.edu</a></address>
+</body></html>
