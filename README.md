@@ -1,4 +1,4 @@
-# Mental notes
+# Notes
 
 This repository contains my personal knowledge base and brain dump of assorted thoughts.
 
