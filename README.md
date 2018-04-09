@@ -13,6 +13,7 @@ The knowledge base is currently made up of the following categories:
 * [Go](go/): inspiring concepts and material related to the Go programming language.
 * [Learning](learning/): techniques, tips and resources related to learning, education and knowledge gathering.
 * [Life](life/): thoughts on what gives a life meaning, and methods for getting rid of cruft.
+* [Neuroscience](neuro/): exciting research and theories in the realms of neuroscience.
 * [Privacy](privacy/): ideas related to privacy and personal integrity.
 * [Reverse Engineering](reverse/): state-of-the-art reverse engineering concepts, tools, techniques, ideas and inspiration.
 * [Security](security/): fundamental concepts in computer security (for fun and profit).
