@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/html" id="admin-bar-likes">
+	<div id="wpadminbar" <% if ( isRtl ) { %> class="rtl" <% } %> >
+		<div class="quicklinks">
+			<ul><li id="wp-admin-bar-wpl-like">
+				<a class="ab-item like" href="master.html%3Fver=20180319.html#"><%= label %></a>
+			</li></ul>
+		</div>
+	</div>
+</script>
+
+<script type="text/html" id='post-likes'>
+	<div class="sd-content wpl-likebox">
+		<% if ( canReblog && canUserReblog ) { %>
+		<div class="wpl-button reblog">
+			<a href="master.html%3Fver=20180319.html#" title='<%- reblog_feedback_no_html %>' class='<%- reblog_css_state %> sd-button' rel='nofollow'>
+				<span><%= reblog_label %></span>
+			</a>
+		</div>
+		<% } %>
+
+		<div class="wpl-button <%- css_state %>">
+			<a href="master.html%3Fver=20180319.html#" title='<%- feedback_no_html %>' class='<%- css_state %> sd-button' rel='nofollow'>
+				<span><%= label %></span>
+			</a>
+		</div>
+
+		<% if ( hasLikes ) { %>
+		<ul class="wpl-avatars sd-like-gravatars">
+			<% likers.forEach( function( item, key ) { %>
+				<li class='<%- item.css_class %>'><a href="https://widgets.wp.com/likes/&lt;%=&#32;item.profile_URL&#32;%&gt;" title="<%- item.name %>" class="wpl-liker" rel="nofollow" target="_parent">
+					<img src='https://widgets.wp.com/likes/&lt;%=&#32;item.avatar_URL&#32;%&gt;' class='avatar avatar-30' alt='<%- item.name %>' width='30' height='30' />
+				</a></li>
+			<% }); %>
+		</ul>
+		<% } %>
+		<div class="wpl-count sd-like-count"><%= feedback %></div>
+	</div>
+</script>
+
+<script type="text/html" id='slim-likes'>
+	<div class="sd-content wpl-likebox wpl-slim-likebox">
+		<div class="wpl-button <%- css_state %>">
+			<a href="master.html%3Fver=20180319.html#" title='<%- feedback_no_html %>' class='<%- css_state %> sd-button' rel='nofollow'>
+				<span><%= label %></span>
+			</a>
+		</div>
+	</div>
+</script>
+
+<script type="text/html" id='comment-likes'>
+	<div class="wpl-likebox">
+		<div id="comment-like" class="comment-likes <%- css_state %>">
+			<a href="master.html%3Fver=20180319.html#" class="comment-like-link" rel="nofollow"><%= label %></a>
+		</div>
+	</div>
+</script>
+
+<script type="text/javascript" src="../../s0.wp.com/_static/index.html%3F%3F%252Fwp-content%252Fjs%252Fpostmessage.js,%252Fwp-content%252Fjs%252Fjed%252Fjed.js,%252Fwp-content%252Fjs%252Fwpcom-proxy-request.js,%252Fwp-content%252Fjs%252Flikes-rest-nojquery.js%3Fm=20180221"></script>
+</head>
+<body></body>
+</html>
