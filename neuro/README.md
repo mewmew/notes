@@ -16,6 +16,8 @@
 
 ## Colour
 
+* [Color: From Hexcodes to Eyeballs](http://jamie-wong.com/post/color/)
+
 * [THE MYSTERY OF TETRACHROMACY: IF 12% OF WOMEN HAVE FOUR CONE TYPES IN THEIR EYES, WHY DO SO FEW OF THEM ACTUALLY SEE MORE COLOURS?](https://theneurosphere.com/2015/12/17/the-mystery-of-tetrachromacy-if-12-of-women-have-four-cone-types-in-their-eyes-why-do-so-few-of-them-actually-see-more-colours/)
 
 > "tetrachromacy: four types of cone cells, instead of the regular three; diversity of colours that is about 100 times greater"
