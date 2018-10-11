@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>LL and LR Parsing Demystified</title>
+  <meta name="description" content="My first adventures in parsing theory came when I was doing anindependent study of programming languages in college. When I got tothe part about algorithms s...">
+
+  <link rel="stylesheet" href="../../css/main.css">
+  <link rel='stylesheet' href="../../css/custom.css">
+  <link rel="canonical" href="ll-and-lr-parsing-demystified.html">
+  <link rel="alternate" type="application/rss+xml" title="Josh Haberman" href="http://blog.reverberate.org/feed.xml">
+</head>
+
+
+  <body>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-3274447-3', 'auto');
+      ga('send', 'pageview');
+    </script>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="http://blog.reverberate.org/">Josh Haberman</a>
+
+    <nav class="site-nav">
+      <a href="ll-and-lr-parsing-demystified.html#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="http://blog.reverberate.org/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">LL and LR Parsing Demystified</h1>
+    <p class="post-meta"><time datetime="2013-07-22T08:09:00+00:00" itemprop="datePublished">July 22, 2013</time></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <p>My first adventures in parsing theory came when I was doing an
+independent study of programming languages in college. When I got to
+the part about algorithms such as LL, LR, and their many variations
+(Strong-LL, SLR, LALR, etc), I was fascinated.  I felt like I was
+peering at some deep and powerful incantations, the significance of
+which I could not yet appreciate, but I was sure that someday terms
+like “left-to-right, rightmost derivation” would make perfect sense,
+and I looked forward to achieving this enlightenment.</p>
+
+<p>I can say now, 10 years and a whole shelf of parsing books later, that
+I understand these algorithms pretty well.  But the way I think about
+them is quite different than any of the literature that I have found.
+I think more from an implementation perspective than a mathematical
+one, which could have something to do with it.  In any case, I want to
+explain how I think of these algorithms; hopefully some people will
+find this perspective intuitive, as I do.</p>
+
+<p>This article will only address the parser from a black-box
+perspective: what are its inputs/outputs and what are its constraints?
+A planned future article will break open the black box for more
+details about the inner workings of these algorithms.</p>
+
+<h1 id="parsing-and-polish-notation">Parsing And Polish Notation</h1>
+
+<p>If you studied Computer Science at university, or ever owned an HP
+calculator, you likely came across Polish and Reverse Polish notation.
+These are ways of writing mathematical expressions that don’t need
+parentheses or order-of-operations rules.  We’re used to writing
+expressions as infix, where the operators go in between the operands:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">  1 + 2 * 3</code></pre></figure>
+
+<p>In this case, how do you know what order to do the operations in?  You
+have to follow the conventional rules (PEDMAS), and if you want a
+different order you have to use parentheses, like:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">  (1 + 2) * 3</code></pre></figure>
+
+<p>Polish and Reverse Polish notation let you write these expressions
+without needing arbitrary order-of-operations rules or parentheses to
+disambiguate.  They work by putting the operators before (Polish) or
+after (Reverse Polish) the operands.  These are also known as prefix
+and postfix notation.</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">  // First example:
+  1 + 2 * 3  // Infix
+  + 1 * 2 3  // Polish (prefix)
+  1 2 3 * +  // Reverse Polish (postfix)
+
+  // Second example:
+  (1 + 2) * 3  // Infix
+  * + 1 2 3    // Polish (prefix)
+  1 2 + 3 *    // Reverse Polish (postfix)</code></pre></figure>
+
+<p>Besides not needing parentheses or a defined order of operations,
+Polish and Reverse Polish are much easier to write evaluators for
+(maybe the HP calculator’s designers decided to use Reverse Polish so
+they could spend a week in the Bahamas).  Here is a simple Reverse
+Polish evaluator in Python.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># Functions that define the operators and how to evaluate them.</span>
+<span class="c"># This example assumes binary operators, but this is easy to extend.</span>
+<span class="n">ops</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="s">"+"</span><span class="p">:</span> <span class="p">(</span><span class="k">lambda</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">),</span>
+  <span class="s">"-"</span><span class="p">:</span> <span class="p">(</span><span class="k">lambda</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">a</span> <span class="o">-</span> <span class="n">b</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="n">tokens</span><span class="p">):</span>
+  <span class="n">stack</span> <span class="o">=</span> <span class="p">[]</span>
+
+  <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">ops</span><span class="p">:</span>
+      <span class="n">arg2</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+      <span class="n">arg1</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+      <span class="n">result</span> <span class="o">=</span> <span class="n">ops</span><span class="p">[</span><span class="n">token</span><span class="p">](</span><span class="n">arg1</span><span class="p">,</span> <span class="n">arg2</span><span class="p">)</span>
+      <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">token</span><span class="p">))</span>
+
+  <span class="k">return</span> <span class="n">stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+<span class="k">print</span> <span class="s">"Result:"</span><span class="p">,</span>  <span class="nb">eval</span><span class="p">(</span><span class="s">"7 2 3 + -"</span><span class="o">.</span><span class="n">split</span><span class="p">())</span></code></pre></figure>
+
+<p>Polish and Reverse Polish notation, as they are usually described, do
+require that all operators have a known <em>arity</em>.  Arity is just the
+number of operands that the operator takes.  This means, for example,
+that unary minus needs to be a different operator than subtraction.
+Otherwise we don’t know how many operands to pop from the stack when
+we see an operator.</p>
+
+<p>A similar formulation that avoids this problem is one like Lisp’s
+s-expressions.  S-expressions (and similar encodings like XML) avoid
+the need for fixed operator arity by explicitly marking both the
+beginning and end of each expression:</p>
+
+<figure class="highlight"><pre><code class="language-lisp" data-lang="lisp">  ; Lisp-style prefix notation; the same operator can be used
+  ; for different numbers of arguments.
+  (+ 1 2)
+  (+ 1 2 3 4 5)
+
+  ; Lisp equivalents of our first two examples:
+  ; Prefix: + 1 * 2 3
+  (+ 1 (* 2 3))
+
+  ; Prefix: * + 1 2 3
+  (* (+ 1 2) 3)</code></pre></figure>
+
+<p>This variant has slightly different tradeoffs (we traded fixed arity
+for required parentheses) but the underlying algorithms for
+parsing/processing these are quite similar, so generally we’ll
+consider this a minor variant of prefix notation.</p>
+
+<p>It might seem like I’ve veered off-topic, but I’ve been sneakily
+talking about LL and LR the whole time.  Polish and Reverse Polish
+notation directly correspond, in my view, to LL and LR parsing,
+respectively.  But to fully explore this idea we need to first
+describe what kind of output we expect from a parser.</p>
+
+<p><em>For a fun exercise, try implementing an algorithm to convert Polish
+to Reverse Polish notation.  See if you can do it without building the
+entire expression into a tree first; you can do it with a stack alone.
+Now say you wanted to do the opposite (Reverse Polish to Polish) –
+you can just run the same algorithm on the input, but backwards!  Of
+course you can build an intermediate tree too, but this takes O(input
+length) space, whereas the stack-only solution takes only O(tree
+depth) space.  How about going infix to postfix?  There is a very
+clever and efficient algorithm for that called the <a href="http://en.wikipedia.org/wiki/Shunting-yard_algorithm">Shunting
+Yard Algorithm</a>.</em></p>
+
+<h1 id="a-parser-and-its-output">A Parser And Its Output</h1>
+
+<p>We can all agree that the input to a parser is a stream of tokens
+(which probably came from a lexer, but we can talk about that part
+another day).  But what is a parser’s output?  You might be inclined
+to say “a parse tree,” and while you can certainly use a parser to
+build a parse tree, it’s also possible to consume a parser’s output
+without ever actually building a tree at all.  For example, <a href="http://www.gnu.org/software/bison/manual/html_node/Infix-Calc.html#Infix-Calc">this
+Bison example evaluates arithmetic expressions in-line with the
+parse.</a>  Every time a subexpression is recognized, it is
+immediately evaluated until the final result is just a single number.
+No parse tree is ever explicitly built.</p>
+
+<p>For this reason, saying that the output of a parser is a parse tree is
+not general enough.  Instead, I claim that the output of a parser, at
+least for the cases of LL and LR which we are discussing today, is a
+parse tree <em>traversal</em>.</p>
+
+<p>Apologies if I’ve set off anyone’s nonsense detectors.  I can hear
+people protest that a tree traversal is an algorithm; an operation you
+perform on a tree.  How can I say that a parser <em>outputs</em> a tree
+traversal?  The answer lies in thinking back to Polish and Reverse
+Polish notation.  These are usually thought of as just a notation for
+mathematical expressions, but we can think of them more generally as
+flat (serialized) <em>encodings</em> of tree traversals.</p>
+
+<p>Think back to our first example of <code class="highlighter-rouge">1 + 2 * 3</code>.  Here is that
+expression written as a tree:</p>
+
+<center><img src="../../../docs.google.com/drawings/d/1O-2N3-56Tn2I2tQkD8GXz7sIpJd2ZuRWBTqNOK1dgrY/pub%3Fw=359&amp;h=328" /></center>
+
+<p>There are three ways of traversing a binary tree, <a href="http://en.wikipedia.org/wiki/Tree_traversal#Depth-first">as
+explained on Wikipedia:</a> in-order, pre-order, and post-order.  They
+differ in whether you visit the parent node before (pre-order), after
+(post-order), or in between (in-order) the children of that parent.
+These three correspond exactly to infix, Polish, and Reverse Polish
+notation:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">  1 + 2 * 3  // Infix expression; in-order traversal.
+  + 1 * 2 3  // Polish (prefix) expression; pre-order traversal.
+  1 2 3 * +  // Reverse Polish (postfix) expression; post-order traversal.</code></pre></figure>
+
+<p>So Polish and Reverse Polish notation fully encode a tree structure
+and the steps you would take to traverse it.  The main difference
+between these encodings and an <em>actual</em> parse tree is that Polish and
+Reverse Polish encodings are not random access.  With a real tree you
+can choose to follow an interior node to its right subtree, its left
+subtree, or even (for many trees) its parent.  With these linear
+encodings there is no such flexibility: you have to follow the
+traversal as it is already encoded.</p>
+
+<p>But on the plus side, this allows the parser’s output to be a stream
+that can be consumed while the parse is happening.  This is how the
+Bison example from before could manage to evaluate the arithmetic
+expression without ever actually building a tree.  If a fully-fledged
+tree is actually required, the linear tree traversal can easily build
+one.  But in cases where it is not, the cost of building one can be
+avoided.</p>
+
+<p>This brings us to a key point:</p>
+
+<p><strong>The primary difference between how LL and LR parsers operate is that
+an LL parser outputs a pre-order traversal of the parse tree and an LR
+parser outputs a post-order traversal.</strong></p>
+
+<p>This is equivalent to these more
+traditional but (in my view) more confusing and less intuitive
+explanations of the distinction:</p>
+
+<ul>
+  <li>“LL parsers produce a leftmost derivation, while LR parsers produce
+a reversed rightmost derivation.”</li>
+  <li>“LL parsers build the tree from the top-down, while LR parsers build
+the tree from the bottom-up.”</li>
+  <li>LL parsers are often called “predictive parsers,” while LR parsers
+are often called “shift-reduce parsers.”</li>
+</ul>
+
+<h1 id="the-shape-of-a-parse-tree">The Shape of a Parse Tree</h1>
+
+<p>Our arithmetic expression tree that we’ve been using so far isn’t
+truly a parse tree, because it doesn’t correspond to a grammar.  To
+examine actual parse trees, we’ll need a real grammar.  Unfortunately
+writing grammars for infix arithmetic expressions isn’t as simple or
+elegant as you might expect.  Encoding the precedence and
+associativity rules into a grammar that is unambiguous (and can be
+handled by LL and LR parsers) is pretty ugly and nonintuitive.  This
+is one reason why LL and LR parsers are often extended with
+capabilities that let you specify operator precedence; for example,
+see <a href="http://www.gnu.org/software/bison/manual/html_node/Precedence.html#Precedence">the
+precedence features of Bison</a>.  But for the purposes of this
+article we want to discuss pure LL and LR.</p>
+
+<p>So we need to ditch our arithmetic expressions example in favor of
+something that is easier to write a grammar for.  We’ll use JSON since
+it is very simple but just complex enough to be interesting.</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">object → '{' pairs '}'
+
+pairs → pair pairs_tail | ε
+pair → STRING ':' value
+pairs_tail → ',' pairs | ε
+
+value → STRING | NUMBER | 'true' | 'false' | 'null' | object | array
+array → '[' elements ']'
+
+elements → value elements_tail | ε
+elements_tail → ',' elements | ε</code></pre></figure>
+
+<p>I’ve used single-quoted strings for literal tokens and upper-case
+names like <code class="highlighter-rouge">STRING</code> for tokens whose spelling can vary (for example,
+“abc” and “” are both valid STRING tokens).  All lower-case names are
+grammar rules (also known as “nonterminals”).</p>
+
+<p>You might wonder why I am doing this <code class="highlighter-rouge">pairs_tail</code> and <code class="highlighter-rouge">elements_tail</code>
+business instead of using a repetition construct, which many parser
+generators like ANTLR support.  They let you write something like:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">elements → value (',' value)*</code></pre></figure>
+
+<p>While this is more convenient and leads to simpler grammars, it makes
+parse trees conceptually a bit more complicated, because the number of
+children for a given grammar rule can vary.  Also, LR parsers can’t
+support repetition operators (for example, Bison doesn’t support
+them), whereas the grammar I wrote above can be used with both LL and
+LR parsers.  So we’ll use this slightly more complicated grammar for
+now.</p>
+
+<p>Now that we have a grammar, we can look at an example of a stream of
+tokens and the resulting parse tree.</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="p">{</span><span class="s2">"message"</span><span class="p">:</span><span class="s2">"Hello, World!"</span><span class="p">}</span></code></pre></figure>
+
+<p>The token stream for this text is:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">{ STRING : STRING }</code></pre></figure>
+
+<p>And the parse tree, according to our grammar, is:</p>
+
+<center><img src="../../../docs.google.com/drawings/d/14crltKWKWU9Vu6edPoUnmMNUNfUCYuXVrM4HmtESVIU/pub%3Fw=375&amp;h=438" /></center>
+
+<p>Notice that the leaf nodes (colored in green) are all tokens, and
+correspond exactly to the sequence of tokens that was the input to our
+parser.  (I cheated slightly by making <code class="highlighter-rouge">ε</code> into a leaf node, but this
+turns out to be pretty clean and principled as we will see).</p>
+
+<p>I claimed earlier that LL parsers output a pre-order traversal and LR
+parsers a post-order traversal.  From this we can say what output we
+would <em>expect</em> to get from an LL and LR parser given this input:</p>
+
+<style type="text/css">
+.term {
+  background: #93c47d;
+  padding: 2px;
+  border: 1px solid black;
+}
+
+.nonterm {
+  background: #cfe2f3;
+  padding: 2px;
+  border: 1px solid black;
+}
+</style>
+
+<pre>
+// LL output: pre-order traversal.
+<span class="nonterm">object</span> <span class="term">'{'</span> <span class="nonterm">pairs(1)</span> <span class="nonterm">pair</span> <span class="term">STRING</span> <span class="term">':'</span> <span class="nonterm">value(1)</span> <span class="term">STRING</span> <span class="nonterm">pairs_tail(2)</span> <span class="term">'}'</span>
+
+// LR output: post-order traversal.
+<span class="term">'{'</span> <span class="term">STRING</span> <span class="term">':'</span> <span class="term">STRING</span> <span class="nonterm">value(1)</span> <span class="nonterm">pair</span> <span class="nonterm">pairs_tail(2)</span> <span class="nonterm">pairs(1)</span> <span class="term">'}'</span> <span class="nonterm">object</span>
+</pre>
+
+<p>Since leaf nodes are always exactly the input tokens themselves, in
+exactly the order of the input, all the parser is really doing is
+<em>inserting</em> the interior nodes in the appropriate places.  Another way
+of looking at it is that a parse tree is just a bunch of structure
+that is defined on top of the sequence of input tokens.  We can see
+this more clearly if we rearrange our previous diagram slightly:</p>
+
+<center><img src="../../../docs.google.com/drawings/d/1tWXseTuc2LirLhCRWNFUXFQLXxiPINF_NINoPq-Ulb8/pub%3Fw=456&amp;h=396" /></center>
+
+<p>We are converging on a very simple model for how LL and LR parsers
+operate.  Both read a stream of input tokens and output that same
+token stream, inserting rules in the appropriate places to achieve a
+pre-order (LL) or post-order (LR) traversal of the parse tree.</p>
+
+<center><img src="../../../docs.google.com/drawings/d/1u0sXxCm4JT1M2zttjSG6r9m1z1Zp3IGHlnmT1gth-Y4/pub%3Fw=598&amp;h=153" /></center>
+
+<p>Here we see another advantage of thinking of a parser’s output in
+terms of Polish and Reverse Polish Notation.  It lets us model the
+parser’s input and output <em>both</em> as simple, flat streams.  This is a
+lot simpler than thinking of a parser’s intermediate output state as a
+partially-built tree – it is unclear how you could meaningfully
+consume or inspect that.</p>
+
+<h1 id="lookahead">Lookahead</h1>
+
+<p>LL and LR parsers are “on-line,” meaning that they can start producing
+output while they are still consuming input. But in many cases the
+tokens <em>prior</em> to a stream position do not contain enough information
+for the parser to know whether it should insert a rule or not (or if
+so, which rule it should insert).  So the parser will “look ahead” in
+the stream to see what the next token(s) are before it makes a
+decision.  When you see designations like LL(1), LR(0), etc. the
+number in parentheses is the number of tokens of lookahead.</p>
+
+<p>Note that the lookahead is relative to where the rule should be
+inserted, which (as you will remember) is <em>before</em> that rule’s tokens
+for LL parsers or <em>after</em> that rule’s tokens for LR parsers.  That
+means that LL lookahead counts from the <em>beginning</em> of the rule’s
+tokens, whereas LR lookahead counts from the <em>end</em>.  This gives LR
+parsers a huge advantage, because they get to see all of the rule’s
+tokens (and maybe some lookahead) before they have to commit to a
+decision, whereas LL parsers only get to see the first few tokens of
+the rule.</p>
+
+<center><img src="../../../docs.google.com/drawings/d/1ow1SIJ58TW3XZUppLzNfws52GVsV5jHScMOsrUwcdEA/pub%3Fw=351&amp;h=212" /></center>
+
+<p>This is why there is such a thing as an LR(0) parser, whereas an LL(0)
+parser would be impossible; it would have no information with which to
+know what rule to use for the following tokens!</p>
+
+<h1 id="consequences">Consequences</h1>
+
+<p>With this understanding of LL vs LR parsing, we can draw a number of
+very significant conclusions about why certain things are the way they
+are.  These illustrate a lot of the pros/cons of LL vs LR parsing.</p>
+
+<h2 id="lr-parsers-can-handle-more-grammars">LR parsers can handle more grammars</h2>
+
+<p>This follows from the previous section about lookahead.  Since LR
+lookahead starts from the end of a rule, a LR(1) parser has strictly
+more information available to it when making a decision than an LL(1)
+parser.  It follows that LR(1) parsers can parse strictly more
+grammars than LL(1) (modulo LL-only grammar extensions; see below).
+LR parsers can also handle <a href="http://en.wikipedia.org/wiki/Left_recursion">left recursion</a>,
+which LL parsers cannot.</p>
+
+<p><strong>Advantage: LR</strong></p>
+
+<p>On the other hand, since LL parsers commit to what rule they are
+parsing before they parse that rule’s tokens, and LL parser knows the
+context of what it is parsing whenever it parses a token.  While that
+is more difficult job (since they have less information to go on), it
+also leads to some important advantages.</p>
+
+<h2 id="ll-parsers-can-support-regex-like-operators-in-grammars">LL parsers can support regex-like operators in grammars</h2>
+
+<p>Knowing the parsing context makes it possible to extend grammars with
+rich regex-like operators like repetition, alternation anywhere (not
+just at the top level), etc.  Basically each rule can form a <a href="http://en.wikipedia.org/wiki/Deterministic_finite_automaton">DFA</a>.
+This is possible with top-down parsing because the parser knows what
+rule it is in and can step through that rule’s state machine as it is
+parsing it.  I don’t believe this is possible with bottom-up parsing
+(even if you could somehow get the parsing tables to do the right
+thing, the “reduce” step counts on the reduction having a fixed
+arity).  This is a really nice advantage of LL, because grammars are
+often more readable with these rich grammar extensions.  In practice
+this helps mitigate the more restrictive grammar rules of LL, since
+many things that you’d want left-recursion for you can use repetition
+operators instead.</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">// LR Grammar: nothing fancy allowed, alternation only allowed
+// at the top-level.
+//
+// This is only allowed because it is equivalent to:
+// pairs → pair pairs_tail
+// pairs → ε
+pairs → pair pairs_tail | ε
+
+// Extended LL grammar; possible because we can build each
+// rule into a DFA.
+pairs → (pair (',' pair)*)?</code></pre></figure>
+
+<p>The latter rule could be built into a DFA like (green states are
+“accept” states):</p>
+
+<center><img src="../../../docs.google.com/drawings/d/1El82TACaKS5Bsko_ebWr6wTwIn2roaQtbWR8CNfpOLA/pub%3Fw=464&amp;h=163" /></center>
+
+<p>Knowing the context also allows for mid-rule actions (custom code that
+runs in-between any two elements of the rule).  <a href="http://www.gnu.org/software/bison/manual/html_node/Mid_002dRule-Actions.html">Bison
+supports this</a>, but only by rewriting the grammar internally which
+makes it appear more complicated in any kind of visualization.</p>
+
+<p><strong>Advantage: LL</strong></p>
+
+<h2 id="ll-parsers-support-inherited-attributes">LL parsers support inherited attributes</h2>
+
+<p>Knowing the context also allows LL-based applications to pass
+attributes/metadata <em>down</em> the tree as it is being built (this is
+sometimes referred to as “inherited attributes.”  (Both LL and LR
+parsers can support “synthesized attributes” which are passed up the
+tree).</p>
+
+<p><strong>Advantage: LL</strong></p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>I have described a alternate model for LL and LR parsers that is
+equivalent to, but more intuitive (for me at least), than most of the
+literature.  We can consider a parser a black box that inputs and
+outputs streams of tokens and rules according to pre-order or
+post-order notation.  So far we have not explored the inner workings
+of these parsers at all; we have just considered them black boxes and
+we have no idea how they work internally.  We have not explored issues
+of what grammars they can handle and which they can’t.  We also have
+not explored the variants of LL and LR (Strong-LL, SLR, LALR, etc).  I
+hope to explore these issues more fully, including example code, in a
+follow-up article.</p>
+
+  </div>
+
+</article>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>Josh Haberman</li>
+          <li><a href="mailto:jhaberman@gmail.com">jhaberman@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/haberman"><span class="icon icon--github"><svg viewBox="0 0 16 16"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">haberman</span></a>
+
+          </li>
+          
+
+          
+          <li>
+            <a href="https://twitter.com/JoshHaberman"><span class="icon icon--twitter"><svg viewBox="0 0 16 16"><path fill="#828282" d="M15.969,3.058c-0.586,0.26-1.217,0.436-1.878,0.515c0.675-0.405,1.194-1.045,1.438-1.809c-0.632,0.375-1.332,0.647-2.076,0.793c-0.596-0.636-1.446-1.033-2.387-1.033c-1.806,0-3.27,1.464-3.27,3.27 c0,0.256,0.029,0.506,0.085,0.745C5.163,5.404,2.753,4.102,1.14,2.124C0.859,2.607,0.698,3.168,0.698,3.767 c0,1.134,0.577,2.135,1.455,2.722C1.616,6.472,1.112,6.325,0.671,6.08c0,0.014,0,0.027,0,0.041c0,1.584,1.127,2.906,2.623,3.206 C3.02,9.402,2.731,9.442,2.433,9.442c-0.211,0-0.416-0.021-0.615-0.059c0.416,1.299,1.624,2.245,3.055,2.271 c-1.119,0.877-2.529,1.4-4.061,1.4c-0.264,0-0.524-0.015-0.78-0.046c1.447,0.928,3.166,1.469,5.013,1.469 c6.015,0,9.304-4.983,9.304-9.304c0-0.142-0.003-0.283-0.009-0.423C14.976,4.29,15.531,3.714,15.969,3.058z"/></svg>
+</span><span class="username">JoshHaberman</span></a>
+
+          </li>
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>Parsing, performance, and low-level programming.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+    
+
+  </body>
+
+</html>

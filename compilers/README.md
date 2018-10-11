@@ -58,3 +58,21 @@ int main(int argc, char **argv) {
     return qux();
 }
 ```
+
+# Parsing
+
+* [Difference between LR and LL](http://blog.reverberate.org/2013/07/ll-and-lr-parsing-demystified.html)
+
+> The primary difference between how LL and LR parsers operate is that an LL parser outputs a pre-order traversal of the parse tree and an LR parser outputs a post-order traversal.
+
+Input `{"message":"Hello, World!"}`
+
+Tokens `{ STRING : STRING }`
+
+```c
+// LL output: pre-order traversal.
+object '{' pairs(1) pair STRING ':' value(1) STRING pairs_tail(2) '}'
+
+// LR output: post-order traversal.
+'{' STRING ':' STRING value(1) pair pairs_tail(2) pairs(1) '}' object
+```

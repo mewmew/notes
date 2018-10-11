@@ -1,0 +1,74 @@
+
+.post-content table {
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 15px;
+  width: 80%;
+  border-collapse: collapse;
+  border: 1px solid gray;
+}
+
+.post-content td, th {
+  padding: 5px;
+  border: 1px solid gray;
+}
+
+.post-content center {
+  margin-bottom: 15px;
+}
+
+blockquote {
+  border-left: 4px solid #ccc;
+  padding: 1rem;
+  background: #f3f3f3;
+  font-style: normal;
+  letter-spacing: normal;
+  font-size: 100%;
+}
+
+.post-link {
+  font-size: 20px;
+  margin-right: 8rem;
+}
+
+.post-list-item .post-meta {
+  float: right;
+  margin-top: 2px;
+}
+
+.site-title, .post-title {
+  letter-spacing: 0;
+}
+
+.site-header {
+  background: #345f98;
+}
+
+.site-title, .site-title:visited, .site-nav .page-link {
+  color: white;
+  opacity: 0.85;
+}
+
+.site-footer {
+  background: #424242;
+  box-shadow: 0px 500px 0px 500px #424242;
+}
+
+.footer-col-wrapper {
+  color: white;
+  opacity: 0.7;
+}
+
+.footer-col-wrapper a {
+  color: white;
+  opacity: 0.6
+}
+
+.footer-col-wrapper a:hover, .site-title:hover, .site-nav .page-link:hover {
+  opacity: 1;
+  text-decoration: none;
+}
+
+.post-meta {
+  font-size: 18px;
+}
