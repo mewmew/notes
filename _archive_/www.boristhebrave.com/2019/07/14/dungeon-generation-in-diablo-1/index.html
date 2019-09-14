@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="profile" href="http://gmpg.org/xfn/11">
+<link rel="pingback" href="https://www.boristhebrave.com/xmlrpc.php">
+
+<title>Dungeon Generation in Diablo 1 &#8211; BorisTheBrave.Com</title>
+<link rel='dns-prefetch' href='https://s0.wp.com/' />
+<link rel='dns-prefetch' href='https://secure.gravatar.com/' />
+<link rel='dns-prefetch' href='https://fonts.googleapis.com/' />
+<link rel='dns-prefetch' href='https://s.w.org/' />
+<link rel="alternate" type="application/rss+xml" title="BorisTheBrave.Com &raquo; Feed" href="https://www.boristhebrave.com/feed/" />
+<link rel="alternate" type="application/rss+xml" title="BorisTheBrave.Com &raquo; Comments Feed" href="https://www.boristhebrave.com/comments/feed/" />
+<link rel="alternate" type="application/rss+xml" title="BorisTheBrave.Com &raquo; Dungeon Generation in Diablo 1 Comments Feed" href="https://www.boristhebrave.com/2019/07/14/dungeon-generation-in-diablo-1/feed/" />
+		<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/12.0.0-1\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/12.0.0-1\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/www.boristhebrave.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=5.2.3"}};
+			!function(a,b,c){function d(a,b){var c=String.fromCharCode;l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,a),0,0);var d=k.toDataURL();l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,b),0,0);var e=k.toDataURL();return d===e}function e(a){var b;if(!l||!l.fillText)return!1;switch(l.textBaseline="top",l.font="600 32px Arial",a){case"flag":return!(b=d([55356,56826,55356,56819],[55356,56826,8203,55356,56819]))&&(b=d([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]),!b);case"emoji":return b=d([55357,56424,55356,57342,8205,55358,56605,8205,55357,56424,55356,57340],[55357,56424,55356,57342,8203,55358,56605,8203,55357,56424,55356,57340]),!b}return!1}function f(a){var c=b.createElement("script");c.src=a,c.defer=c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var g,h,i,j,k=b.createElement("canvas"),l=k.getContext&&k.getContext("2d");for(j=Array("flag","emoji"),c.supports={everything:!0,everythingExceptFlag:!0},i=0;i<j.length;i++)c.supports[j[i]]=e(j[i]),c.supports.everything=c.supports.everything&&c.supports[j[i]],"flag"!==j[i]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[j[i]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(h=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",h,!1),a.addEventListener("load",h,!1)):(a.attachEvent("onload",h),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),g=c.source||{},g.concatemoji?f(g.concatemoji):g.wpemoji&&g.twemoji&&(f(g.twemoji),f(g.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+		<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+	<link rel='stylesheet' id='wp-block-library-css'  href='../../../../wp-includes/css/dist/block-library/style.min.css%3Fver=5.2.3.css' type='text/css' media='all' />
+<link rel='stylesheet' id='ce_responsive-css'  href='../../../../wp-content/plugins/simple-embed-code/css/video-container.min.css%3Fver=5.2.3.css' type='text/css' media='all' />
+<link rel='stylesheet' id='sketch-style-css'  href='../../../../wp-content/themes/sketch/style.css%3Fver=5.2.3.css' type='text/css' media='all' />
+<link rel='stylesheet' id='sketch-lato-css'  href='../../../../../fonts.googleapis.com/css%3Ffamily=Lato:300,400,700,300italic,400italic,700italic&amp;subset=latin,latin-ext.css' type='text/css' media='all' />
+<link rel='stylesheet' id='genericons-css'  href='../../../../wp-content/plugins/jetpack/_inc/genericons/genericons/genericons.css%3Fver=3.1.css' type='text/css' media='all' />
+<link rel='stylesheet' id='jetpack_css-css'  href='../../../../wp-content/plugins/jetpack/css/jetpack.css%3Fver=7.5.2.css' type='text/css' media='all' />
+<script type='text/javascript' src='../../../../wp-includes/js/jquery/jquery.js%3Fver=1.12.4-wp'></script>
+<script type='text/javascript' src='../../../../wp-includes/js/jquery/jquery-migrate.min.js%3Fver=1.4.1'></script>
+<link rel='https://api.w.org/' href='https://www.boristhebrave.com/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://www.boristhebrave.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://www.boristhebrave.com/wp-includes/wlwmanifest.xml" /> 
+<link rel='prev' title='DeBroglie v0.1' href='https://www.boristhebrave.com/2018/10/06/debroglie-v0-1/' />
+<link rel='next' title='Dungeon Generation in Enter The Gungeon' href='https://www.boristhebrave.com/2019/07/28/dungeon-generation-in-enter-the-gungeon/' />
+<meta name="generator" content="WordPress 5.2.3" />
+<link rel="canonical" href="index.html" />
+<link rel='shortlink' href='https://wp.me/p8HD73-5H' />
+<link rel="alternate" type="application/json+oembed" href="https://www.boristhebrave.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fwww.boristhebrave.com%2F2019%2F07%2F14%2Fdungeon-generation-in-diablo-1%2F" />
+<link rel="alternate" type="text/xml+oembed" href="https://www.boristhebrave.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fwww.boristhebrave.com%2F2019%2F07%2F14%2Fdungeon-generation-in-diablo-1%2F&#038;format=xml" />
+
+<link rel='dns-prefetch' href='https://v0.wordpress.com/'/>
+<link rel='dns-prefetch' href='https://jetpack.wordpress.com/'/>
+<link rel='dns-prefetch' href='https://s0.wp.com/'/>
+<link rel='dns-prefetch' href='https://s1.wp.com/'/>
+<link rel='dns-prefetch' href='https://s2.wp.com/'/>
+<link rel='dns-prefetch' href='https://public-api.wordpress.com/'/>
+<link rel='dns-prefetch' href='https://0.gravatar.com/'/>
+<link rel='dns-prefetch' href='https://1.gravatar.com/'/>
+<link rel='dns-prefetch' href='https://2.gravatar.com/'/>
+<style type='text/css'>img#wpstats{display:none}</style><style type="text/css">.broken_link, a.broken_link {
+	text-decoration: line-through;
+}</style>
+<!-- Jetpack Open Graph Tags -->
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Dungeon Generation in Diablo 1" />
+<meta property="og:url" content="https://www.boristhebrave.com/2019/07/14/dungeon-generation-in-diablo-1/" />
+<meta property="og:description" content="Diablo1 is a classic 1996 hack and slash rogue-like.  several fans took it upon themselves to reverse-engineer the source code. I began a week long deep dive into how exactly did lead developer, Da…" />
+<meta property="article:published_time" content="2019-07-14T13:15:53+00:00" />
+<meta property="article:modified_time" content="2019-08-04T10:31:31+00:00" />
+<meta property="og:site_name" content="BorisTheBrave.Com" />
+<meta property="og:image" content="https://www.boristhebrave.com/wp-content/uploads/2019/07/Diablo_title.png" />
+<meta property="og:image:width" content="256" />
+<meta property="og:image:height" content="207" />
+<meta property="og:locale" content="en_GB" />
+<meta name="twitter:text:title" content="Dungeon Generation in Diablo 1" />
+<meta name="twitter:card" content="summary" />
+
+<!-- End Jetpack Open Graph Tags -->
+</head>
+
+<body class="post-template-default single single-post postid-353 single-format-standard">
+<div id="page" class="hfeed site">
+	<a class="skip-link screen-reader-text" href="index.html#content">Skip to content</a>
+	<header id="masthead" class="site-header" role="banner">
+		<div class="site-branding">
+						<h1 class="site-title"><a href="https://www.boristhebrave.com/" rel="home">BorisTheBrave.Com</a></h1>
+			<h2 class="site-description"></h2>
+		</div>
+
+		<nav id="site-navigation" class="main-navigation" role="navigation">
+			<button class="menu-toggle">Menu</button>
+			<div class="menu"><ul>
+<li ><a href="https://www.boristhebrave.com/">Home</a></li><li class="page_item page-item-122"><a href="https://www.boristhebrave.com/about/">About</a></li>
+</ul></div>
+		</nav><!-- #site-navigation -->
+	</header><!-- #masthead -->
+
+	<div id="content" class="site-content">
+		
+	<div id="primary" class="content-area">
+		<main id="main" class="site-main" role="main">
+
+		
+			
+<article id="post-353" class="post-353 post type-post status-publish format-standard has-post-thumbnail hentry category-uncategorized tag-procgen wpautop">
+	<header class="entry-header">
+		<h1 class="entry-title">Dungeon Generation in Diablo 1</h1>
+		<div class="entry-meta">
+						<span class="posted-on"><a href="index.html" rel="bookmark"><time class="entry-date published" datetime="2019-07-14T13:15:53+00:00">2019-07-14</time><time class="updated" datetime="2019-08-04T10:31:31+00:00">2019-08-04</time></a></span><span class="byline"><span class="sep"> | </span><span class="author vcard"><a class="url fn n" href="https://www.boristhebrave.com/author/boris/">Boris</a></span></span>					</div><!-- .entry-meta -->
+	</header><!-- .entry-header -->
+
+	<div class="entry-content">
+		
+<div class="wp-block-jetpack-markdown"><p><a href="https://en.wikipedia.org/wiki/Diablo_(video_game)">Diablo 1</a> is a classic 1996 hack and slash action RPG. It was one of the first popular attempts at bringing roguelikes to the masses, from the niche ascii art. It&#8217;s spun a host of sequels, and imitators. It&#8217;s known for a dark, moody atmosphere that intensifies as the player descends into the dungeon beneath the town of Tristram. It was one of the first games I played with procedurally generated maps, and it blew me away that generating such convincing areas was even possible.</p>
+<p>I recently discovered that thanks to the discovery of various debug symbol files accidentally left lying around, several fans took it upon themselves to <a href="https://github.com/diasurgical/devilution">reverse-engineer the source code</a> and clean it up into a good guess at what the original game is like. Thus began a week long deep dive into how exactly did lead developer, David Brevik, actually craft these levels. It may have taken away some of the magic of the game, but I learnt lots of techniques I think are applicable to anyone developing a similar game, which I share with you below.</p>
+</div>
+
+
+
+<span id="more-353"></span>
+
+
+
+<div class="wp-block-jetpack-markdown"><p>Thanks to David Brevik and the Blizard North team for making such an amazing game, and to <a href="https://github.com/galaxyhaxz">galaxyhaxz</a> and the Devilution team for their amazing work restoring this game into a readable state.</p>
+<p>You can hear <a href="https://www.youtube.com/watch?v=VscdPA6sUkc&amp;t=71m42s">Brevik talk about the generation</a> in his postmortem, but here I include all the gory details, and my own interpretation of them.</p>
+<h1>Overview</h1>
+<p>Diablo is an isometric tile based game. The game consists of 4 stages, each of 4 levels. The stages are  &quot;Cathedral&quot;, &quot;Catacombs&quot;, &quot;Caves&quot; and &quot;Hell&quot;. There&#8217;s also some fixed levels, like the town of Tristram, which I will not cover here. Diablo has a separate level generation routine for each of the 4 stages, so I&#8217;ll first discuss features, and then how each stage works separately.</p>
+<p>I&#8217;m only really interested in how the levels are generated. For details on quests, monsters, etc, I can recommend <a href="http://www.lurkerlounge.com/diablo/jarulf/jarulf162.pdf">Jarulf&#8217;s Guide To Diablo and Hellfire</a> which discusses these aspects in exhaustive detail.</p>
+<h1>Common features</h1>
+<p>Although there&#8217;s a separate level generator for every stage, there are some common features they all share.</p>
+<h2>Dungeons and tiles</h2>
+<p>Every level of the game is generated to fill a 40 by 40 grid of tiles. The x-axis corresponds to south east on the map, and the y-axis to south west.</p>
+<p>These tiles are actually only used for level generating purposes. Once the level is created, each tile is subdivided into 4 &quot;dungeon pieces&quot; for rendering.</p>
+</div>
+
+
+
+<div class="wp-block-image"><figure class="aligncenter"><img src="../../../../wp-content/uploads/2019/07/diablo_tile_to_dpiece.png" alt="" class="wp-image-360" srcset="../../../../wp-content/uploads/2019/07/diablo_tile_to_dpiece.png 423w, ../../../../wp-content/uploads/2019/07/diablo_tile_to_dpiece-300x106.png 300w" sizes="(max-width: 423px) 100vw, 423px" /></figure></div>
+
+
+
+<div class="wp-block-jetpack-markdown"><p>This more fine grained grid is used for determining what is walkable, and also allows for a more efficient re-use of graphics memory. I&#8217;ve written about <a href="https://www.boristhebrave.com/2013/07/14/tileset-roundup/">subdividing tile schemes in the past</a>.</p>
+<p>This means that a typical diablo map has over a hundred tiles, many of which are subtle variations of another, to account for all possible ways they can connect up. We&#8217;ll talk about this more later.</p>
+<p>To my surprise, unlike other games in the series, dungeons maps are not assembled out of pre-authored chunks. Almost everything is done on a per-tile basis with algorithms.</p>
+<h2>Multi stage process</h2>
+<p>Each dungeon routine is split into two stages. The &quot;predungeon generation&quot; doesn&#8217;t deal with choice of tiles at all. It just generates a array of which tiles are walkable, where there are doors, and a few other high level details. Then as a second stage, the predungeon is converted to an array of tiles, and further tile aware generation and changes are done afterwards.</p>
+<p>This must have been tremendously convenient as a designer. You can tinker with the floor plan completely independently from choice of tile and stylistic choice. But in many cases the two are somewhat interlinked to give a more coherent feel.</p>
+<p>All the predungeon stages work by starting with an entirely solid level, and recursively setting parts of the level to be floor tile. The details are covered later.</p>
+<h2>Set Pieces</h2>
+<p>Set pieces are pre-authored chunks of level that are simply pasted verbatim into an otherwise randomly generated level. They are used for the majority of the quests in the game. There can only be one set-piece per level, and the choice of positioning is custom to each stage.</p>
+</div>
+
+
+
+<figure class="wp-block-image"><img src="../../../../wp-content/uploads/2019/07/diablo_ButcherRoom.gif" alt="" class="wp-image-365"/><figcaption>The Butcher&#8217;s Den &#8211; one of the first set pieces encountered in the game.</figcaption></figure>
+
+
+
+<div class="wp-block-jetpack-markdown"><h2>Minisets</h2>
+<p>Minisets are another way that pre-authored content reaches a level. These are small patches, often around 3&#215;3, which are inserted randomly into the dungeon. There&#8217;s a simple pattern matching scheme so that they only get put in &quot;valid&quot; positions. They are often coded with additional requirements, e.g. that minisets cannot be placed to near each other, and cannot overlap set pieces and so on. Some minisets always find and replace, some only do so at a fixed probability.</p>
+<p>Minisets are used for a wide variety of purposes in Diablo. They are used for placing larger tile based objects, such as stairways, but they are also for fixing up combinations of tiles that don&#8217;t properly connect together and adding some random variation to tiles.</p>
+</div>
+
+
+
+<div class="wp-block-image"><figure class="aligncenter"><img src="../../../../wp-content/uploads/2019/08/diablo_stairs.png" alt="" class="wp-image-424" srcset="../../../../wp-content/uploads/2019/08/diablo_stairs.png 614w, ../../../../wp-content/uploads/2019/08/diablo_stairs-300x102.png 300w" sizes="(max-width: 614px) 100vw, 614px" /><figcaption>Minisets are used for replacing small groups of tiles</figcaption></figure></div>
+
+
+
+<div class="wp-block-jetpack-markdown"><h2>Theme Rooms</h2>
+<p>Theme rooms are small spaces enclosed by a wall and a door. They typically have some preset objects randomly in them. For example, libraries always have a book case bracketed by two candles, and some random book stands and monsters. Monster pits have a ton of monsters and a random item, and so on.</p>
+<p>In cathedral levels, the generator already makes appropriate rooms, so they are detected via <a href="https://en.wikipedia.org/wiki/Flood_fill">floodfill</a> and re-purposed. In other stages, open spaces are found and then a rectangle of walls and a door is drawn for the purpose.</p>
+<p>Each theme room type has specific requirements as to size and what stages it generates on.</p>
+</div>
+
+
+
+<div class="wp-block-image"><figure class="aligncenter"><img src="../../../../wp-content/uploads/2019/08/diablo_shrine.jpg" alt="" class="wp-image-422" srcset="../../../../wp-content/uploads/2019/08/diablo_shrine.jpg 610w, ../../../../wp-content/uploads/2019/08/diablo_shrine-300x169.jpg 300w" sizes="(max-width: 610px) 100vw, 610px" /><figcaption>A shrine room, one of the most common theme rooms</figcaption></figure></div>
+
+
+
+<div class="wp-block-jetpack-markdown"><h2>Tile Substitutions</h2>
+<p>Several of the maps have special customization of tiles, but they all share in common that some tiles can be swapped out for equivalent variations. More common tiles (like floors and flat walls) tend to have more variants to break up the monotony. Tile substitutions are set to never be used twice too near each other.</p>
+<h2>Pattern matching and &quot;fixups&quot;</h2>
+<p>As discussed, minisets already work as basic find and replace mechanism to fix faults with the generators. But most stages include several routines to detect and fix more specific problems. I won&#8217;t go into specifics here as there are loads of them. Suffice to say that Diablo is pretty buggy and it&#8217;s apparent once they got closer to release it was easier to just add detection for specific problems rather than address the underlying issues.</p>
+<p>One common fixup is &quot;lockout&quot;, which detects if it&#8217;s not possible to walk across the entire dungeon, and restarts generation if it fails.</p>
+<h2>Quests</h2>
+<p>Most quests are handled by set pieces, but a few have custom logic. For example, &quot;Zhar the Mad&quot; generates in library theme rooms, &quot;Poisoned Water&quot;&#8217;s entrance is generated by a miniset, and the &quot;Anvil of Fury&quot; has specific level generation code. I won&#8217;t cover the specifics, but the code is littered with specific checks for quests.</p>
+<h1>Cathedral</h1>
+<p>The cathedral is easily the most iconic of the diablo stages. It is defined by its long rows of gothic arches, boxy rooms and providing many choke points via doorways. Let&#8217;s delve into how it is constructed.</p>
+<h2>Predungeon</h2>
+<p>The first thing that is done is to draw the spine of this map. It randomly chooses to place up to 3 10&#215;10 rooms in predefined positions along the central x or y axis. A wide corridor is also drawn along the axis to connect the room. If there&#8217;s a set piece on this level, it always goes in the center of one of these rooms. These central rooms are also marked as ineligible for adding extra walls too later, so they are always a large open space.</p>
+<p>All other rooms are generated by a recursive &quot;budding&quot; technique in a function called <code>L5roomGen</code> which is initiated from each of the above rooms, and the choice of axis.</p>
+<h3><code>L5roomGen Listing</code></h3>
+<ul>
+<li>Passed in a rectangle of the initial room to bud off, and a preferred axis.</li>
+<li>1 in 4 chance of switching the preferred axis between X and Y.</li>
+<li>Pick a random size for the new room, either 2, 4 or 6 tiles on each side.</li>
+<li>For each side of the initial room along the selected axis (i.e. SE/NW for X, SW/NE for Y):
+<ul>
+<li>Align the new room rectangle to the center of that edge of the initial room</li>
+<li>Check nothing has been drawn there yet and we haven&#8217;t reached the edge of the map. A one tile border is required for walls.</li>
+<li>If the check passes, draw the room in.</li>
+</ul>
+</li>
+<li>For each room that was drawn, invoke <code>L5roomGen</code> recursively, passing in the new room, and the opposing axis to the one just used.</li>
+</ul>
+<p>The net effect of this procedure is to start with a few rooms in a large amount of solid tiles, and then repeatedly glue extra rectangles to carve out more walkable space. At this stage, all &quot;rooms&quot; are open on one side, as each new room is placed directly adjacent to the previous room, with no gap for a wall.</p>
+<p>The generator now counts the number of walkable tiles generated. If it doesn&#8217;t meet a minimum threshold that increases every level, the dungeon is scrapped and retried.</p>
+<h2>Dungeon</h2>
+<p>So far, the only tiles placed are solid and floor. We need to replace those with actual wall tiles. Diablo uses marching squares for this, which I&#8217;ve <a href="https://www.boristhebrave.com/2018/04/15/marching-cubes-tutorial/">discussed in a previous article</a>.</p>
+<p>However, it uses an unusual variant. The cathedral tileset includes walls, but they are always at the back edge of the tile. So there&#8217;s a tile with a wall on the north-east face, but not one for the south east face. To get walls for the other sides, you have to find a solid tile which has an extra wall extending outside the tile boundary. This sounds weird, but it&#8217;s actually very convenient for depth sorting walls (though David Brevik himself said it was the <a href="https://www.youtube.com/watch?v=VscdPA6sUkc&amp;t=20m17s">number #1 mistake</a>).</p>
+</div>
+
+
+
+<div class="wp-block-image"><figure class="aligncenter"><img src="../../../../content/2019/07/diablo_walls.svg" alt=""/></figure></div>
+
+
+
+<p>To deal with this, Diablo skips some walls during marching cubes:</p>
+
+
+
+<div class="wp-block-image"><figure class="aligncenter is-resized"><img src="../../../../content/2019/07/diablo_mc.svg" alt="" width="332" height="731"/></figure></div>
+
+
+
+<div class="wp-block-jetpack-markdown"><p>The extra walls are added in a later fixup step. I think this simple procedure is one of the most responsible for the cathedral&#8217;s &quot;look&quot;. Because opposing walls are attached to solid tiles, if you have two rooms that are separated by one tile of walls, the opposing wall is simply not created. That means that separators between rooms are &quot;thinner&quot; than you could normally get with the resolution marching cubes is done at.</p>
+<p>Once the basic walls are placed, the generator also 4 free standing columns to each of the three central rooms, and a colonnade of arches for the central hallway. This helps the cathedral look more deliberately constructed than the other levels, and helps players orient themselves.</p>
+<p>Then the generator randomly adds dividing walls. Dividing walls always run straight along an axis from one wall to another. They start at corners, which tends to make them neatly divide areas into boxes. 25% of the time the wall is a series of arches, 25% of the time a series of arches with bars covering the entry, and otherwise is a solid wall. For bars and solid walls, a door or arch is randomly added somewhere along the dividing wall to ensure the space is still walkable.</p>
+<p>A floodfill routine identifies potential theme rooms.</p>
+<p>Stairs are placed to connect to other levels. The dungeon is retried if these cannot be placed.</p>
+<p>Then comes a raft of mini sets, fixups and substitutions I&#8217;m not going to go into. My favourite is the PANCREAS1 miniset, which has a 1% chance of placing a chunk of bloody flesh on a floor tile. Finally 5-10 lamps objects are dotted around to give some decoration.</p>
+</div>
+
+
+
+<figure class="wp-block-image"><img src="../../../../wp-content/uploads/2019/07/diablo_cathedral-1024x523.png" alt="" class="wp-image-384" srcset="../../../../wp-content/uploads/2019/07/diablo_cathedral-1024x523.png 1024w, ../../../../wp-content/uploads/2019/07/diablo_cathedral-300x153.png 300w, ../../../../wp-content/uploads/2019/07/diablo_cathedral-768x392.png 768w, ../../../../wp-content/uploads/2019/07/diablo_cathedral.png 1032w" sizes="(max-width: 1024px) 100vw, 1024px" /><figcaption>The automap for a generated Cathedral level</figcaption></figure>
+
+
+
+<div class="wp-block-jetpack-markdown"><h1>Catacombs</h1>
+<p>Whereas the Cathedral feels like a designed building, the Catacombs has a much more haphazard feel. It&#8217;s characterized by squarish rooms connected to each other via mazy winding corridors. It has wide openings instead of doors in many places, increasing the chance the player will be mobbed by many enemies.</p>
+<p>The catacombs is also where the generation algorithm is most advanced. I suspect time pressures caused simpler approaches to be taken for later stages.</p>
+<h2>Predungeon</h2>
+<p>The predungeon routine for catacombs is actually somewhat unique. The other stages have a simple boolean indicating if there is floor or not (plus a bitset for additional details). The catacombs stores its predungeon in an ascii map, much like the classic roguelikes. That&#8217;s not too much of a surprise considering <a href="http://www.rpgfan.com/features/David_Brevik_Interview/index.html">David Brevik explicitly took inspiration for Diablo from Angband</a>.</p>
+<p>The main room generation is a recursive algorithm again, this time recursive subdivision. The function <code>CreateRoom</code> is called with the entire 40&#215;40 dungeon area, with a 1 tile border removed.</p>
+<h3><code>CreateRoom Listing</code></h3>
+<ul>
+<li><code>CreateRoom</code> is passed a rectangle which is the area it is meant generate rooms inside. It&#8217;s also passed details about the originating room (initially null)</li>
+<li>If the area is too narrow, exit.</li>
+<li>Pick a random size for the room between 4 and 9 tiles each side, respecting the max size of the area to put the room in.</li>
+<li>Pick a random position for the room in the area.</li>
+<li>Draw the room into the ascii map. The drawing uses <code>'.'</code> for floor tiles, <code>'#'</code> for a surrounding wall, and <code>'A'</code>, <code>'B'</code>, <code>'C'</code> and <code>'E'</code> to mark the 4 corners.</li>
+<li>If there is an originating room:
+<ul>
+<li>Pick a random tile on the closest sides of the originating and new room.</li>
+<li>Record that information in a hallway list to be used later.</li>
+</ul>
+</li>
+<li>Cut the remaining parts of the area excluding this room into 4 rectangles.</li>
+<li>For each rectangle, shrink the size by two tiles to ensure space between rooms, then recursively call <code>CreateRoom</code> with that rect as the area, and the created room as the originating room.</li>
+</ul>
+<p>If there&#8217;s a set piece it will always be this first room created by CreateRoom, and it&#8217;ll be forced to a large enough size to fit the set piece.</p>
+<p>After calling <code>CreateRoom</code>, there will be an ascii array something like the following (thanks to <a href="https://github.com/nomdenom">nomdenom</a> for extracting this):</p>
+<pre><code class="language-text">                                         
+                                         
+                                         
+                                         
+                                 A##B   
+                                 #..#    
+         A####B                  #..#    
+         #....#                  #..#    
+         #....#                  C##E    
+         #....#                          
+         C####E                 A#####B  
+                                #.....#  
+                                #.....#  
+          A########B            #.....#  
+          #........#            #.....#  
+          #........#            C#####E  
+          #........#   A#B               
+          #........#   #.#               
+          #........#   #.#               
+          #........#   #.#               
+          #........#   #.#               
+          #........#   #.#               
+          C########E   #.#               
+                       #.#        A#B    
+                       C#E        #.#    
+                A####B            #.#    
+                #....#            #.#    
+                #....#            #.#    
+                #....#            #.#    
+                C####E            #.#    
+                                  #.#    
+                       A#####B    C#E    
+                       #.....#           
+                 A###B #.....#           
+                 #...# #.....#           
+                 C###E #.....#           
+                       C#####E           
+</code></pre>
+<p>In this case, the bottom most room was the &quot;root&quot; room created initially.</p>
+<p>Then the hallways information is used. A line is drawn between each recorded pair of points. When it intersects a wall, a <code>'D'</code> is written, and when it intersects a solid tile <code>','</code> is used. Hallways are randomly of width 1, 2 or 3. The corner tiles are used to assist navigation.</p>
+<p>Doors are skipped if they would be adjacent to another door and hallways can overlap, helps obfuscate the simplicity of the generator..</p>
+<p>After all halls are written, the ascii is cleaned up. Corner tiles become wall tiles, and all <code>' '</code> tiles adjacent to a <code>','</code> also become walls. Finally, <code>','</code> is replaced with <code>'.'</code>. That leaves a dungeon plan like the following.</p>
+<pre><code class="language-text">                                         
+                                         
+                                         
+                                         
+                                 ####    
+                                 #..#    
+         ######                  #..#    
+         #....#                  #..#    
+         #....#                  #D##    
+         #....#                  #.#     
+         #D####                 ##D####  
+         #..#                   #.....#  
+         #..#                 ###.....#  
+         ##D########          #.D.....#  
+          #........#          #.#.....#  
+          #........# ###      #.##D####  
+          #........# #.###    #.##...#   
+          #........###.D.#    #.##...#   
+          #........##..#.#    #.##...#   
+          #........##..#.#    #.##...#   
+          #........##..#.#    #.##...#   
+          #........##..#.#    #.##...#   
+          ###D#######..#.#    #.##...#   
+            #.......#..#.#    #.###D##   
+            ###.....#..###    #.# #.#    
+            #######D##.#      #.# #.#    
+                #....#.#      #.# #.#    
+                #....D.#      #.# #.#    
+                #....######   #.# #.#    
+               ##D####....##  #.# #.#    
+               #...........#  #.# #.#    
+               ####....###D####.# ###    
+                  ######.....##.#        
+                 #####.D.....##.#        
+                 #...D.#.....D..#        
+                 #####.#.....####        
+                     #########           
+</code></pre>
+<p>As you can see, this routine can leave quite a lot of empty space on the map. Hence the next thing the generator does is &quot;fill voids&quot;. This looks for any contiguous stretch of wall that it can glue extra rectangles of floor to. The rectangles much be at least 5&#215;5 and at most 12&#215;14.</p>
+<p>Fill voids continues until there are at least 700 tiles, or the retry threshold is reached. If it doesn&#8217;t get to 700 then the dungeon is restarted from scratch.</p>
+<p>That gives us a the final predungeon seen below.</p>
+<pre><code class="language-text">   ##########                            
+   #........# ###########                
+   #........# #.........#                
+   #........# #.........#                
+   #........# #.........#        ####    
+   #........# #.........#        #..#    
+   #######..###.........#        #..#    
+         #..............#        #..#    
+         #..............#        #D##    
+         #..............#        #.#     
+         #D####.........#       ##D####  
+         #..# ###########       #.....#  
+         #..#                 ###.....#  
+         ##D########          #.D.....#  
+          #........#          #.#.....#  
+   ########........# ###      #.##D####  
+   #...............# #.###    #.##...#   
+   #...............###.D.#    #.##...#   
+   #...............##..#.#    #.##...#   
+   #...............##..#.#    #.##...#   
+   #...............##..#.#    #.##...#   
+   #...............##..#.#    #.##...#   
+   #......###D#######..#.#    #.##...#   
+   #......# #.......#..#.#    #.###D##   
+   #......# ###.....#..###    #.# #.#    
+   #......#########D##.#      #.# #.#    
+   #.........#  #....#.#      #.# #.#    
+   #.........#  #....D.#      #.# #.#    
+   #.........#  #....######   #.# #.#    
+   #.........# ##D####....##  #.# #.#    
+   #.........# #...........#  #.# #.#    
+   #.........# ####....###D####.# ###    
+   #.........#    ######.....##.#        
+   #.........#   #####.D.....##.#        
+   #.........#   #...D.#.....D..#        
+   ###########   #####.#.....####        
+                     #########       
+</code></pre>
+<h2>Dungeon</h2>
+<p>Again, catacombs departs from the standard level formula. Rather than use marching squares (which assigns tiles based on 2&#215;2 rects in the predungeon), there is a custom pattern matching routine that matches looks at each 3&#215;3 rect in the predungeon to decide the corresponding tile in the dungeon. The patterns specify whether each predungeon tile should be wall, floor, door or solid, or some combination of the above. I&#8217;m not sure why.</p>
+<p>The rest of the function should sound familiar if you&#8217;ve read the cathedral. Up/down staircases are placed, the dungeon is checked to see it&#8217;s fully navigable, and various fixes are run. Theme rooms are inserted as described in the Common Section, then a bunch of minisets and substitutions.</p>
+<p>I think the minisets fiddle around with doorways, but they&#8217;re pretty tedious to read without a tool so I didn&#8217;t go to far into it.</p>
+</div>
+
+
+
+<div class="wp-block-jetpack-markdown"><h1>Caves</h1>
+<p>The caves stages are filled with wide open spaces and rivers of lava. The walls of the area are rough and wobbly. The only rectilinear components are some wooden planking that is evidently a later addition than the caves themselves.</p>
+<p>This stage is one of the most visually stunning in the game due to the animated lava and as it feels a marked departure from the room-like structures found earlier. I was quite surprised therefore to discover much of the generation is modeled after the cathedral stage, with some clever ideas to make it feel more &quot;cave like&quot;.</p>
+<h2>Predungeon</h2>
+<p>Caves starts with a single random room of size 2&#215;2 somewhere near the center of the map. It then  calls the <code>DRLG_L3CreateBlock</code> routine on each edge of that block.</p>
+<p>When rectangles are drawn in this level, they are not just a normal fill. The interior is always solid, but every tile on the edge has a 50% of being floor, and otherwise is left as solid.</p>
+<h3><code>DRLG_L3CreateBlock Listing</code></h3>
+<ul>
+<li>This function takes a rectangle edge, i.e. a starting point, a direction and a length.</li>
+<li>Choose a new block size to create, between 3-4 on each size.</li>
+<li>Align the new block randomly against the input edge.</li>
+<li>If there&#8217;s not space to draw the block, exit.</li>
+<li>Draw the block.</li>
+<li>If a 1 in 4 chance, exit.</li>
+<li>Recursively call <code>DRLG_L3CreateBlock</code> with the 3 edges of the block other than the one we came in from.</li>
+</ul>
+<p>Though the routine is similar to <code>L5roomGen</code> above, the fact is uses a much smaller block size and draws rough boundaries means it gives a much more organic feel. It also doesn&#8217;t include a 1 tile boundary for walls, so unlike the previous generators it can create loops.</p>
+<p>After blocking out the rough shape of the dungeon, the generator applies some erosion routines:</p>
+<ul>
+<li>First it finds 2&#215;2 areas of tiles that two solid tiles diagonally opposite from each other. These formations are often fiddly to deal with when doing marching squares, so one of the solid tiles is replaced with floor, randomly.</li>
+<li>Any solid tiles that are solos, surrounded by 8 floor tiles, are replaced with floor.</li>
+<li>Any long, straight section of walls are randomly roughened up by replacing 50% of them with floor tiles.</li>
+<li>Diagonals are cleaned up a second time.</li>
+</ul>
+<p>All of these routines add more floor tiles, so the map is more open than it was before.</p>
+<p>If there are less than 600 floor tiles, the map is retried.</p>
+<h2>Dungeon</h2>
+<p>The predungeon is converted to tiles via marching squares. Unlike the cathedral and catacombs, the tileset is much more conventional, and includes nearly all combinations needed for marching squares. But it&#8217;s missing tiles for diagonally opposing walls &#8211; those were cleaned up in the predungeon phase so never come up.</p>
+<p>Next is a bunch of minisets, as usual. There are several minisets that identify a free standing section of wall and replace it with stalagmites and floor, adding to the openness.</p>
+<p>The a pool of lava is added. This is done by looking for a contiguous section of wall by <a href="https://en.wikipedia.org/wiki/Flood_fill">floodfill</a>. If it can find a section of wall / solid tiles that is less than 40 tiles that is completely surrounded by floor tiles, it is replaced with lava. The dungeon is retried if a pool cannot be found.</p>
+</div>
+
+
+
+<div class="wp-block-image"><figure class="aligncenter"><img src="../../../../wp-content/uploads/2019/07/diablo_wall_to_lava.png" alt="" class="wp-image-366" srcset="../../../../wp-content/uploads/2019/07/diablo_wall_to_lava.png 872w, ../../../../wp-content/uploads/2019/07/diablo_wall_to_lava-300x75.png 300w, ../../../../wp-content/uploads/2019/07/diablo_wall_to_lava-768x192.png 768w" sizes="(max-width: 872px) 100vw, 872px" /><figcaption>A 3&#215;3 wall is converted to a lava lake</figcaption></figure></div>
+
+
+
+<div class="wp-block-jetpack-markdown"><p>Then some rivers of lava are added. The generator takes several attempts at drawing a river that starts at the pool of lava and terminates in a wall. The requirements are that the river never doubles back on itself, must be between 7 and 100 tiles long and there must be a valid spot to place a bridge tile. The bridge tile ensures that the whole map remains traversable. Up to 4 rivers can be added, if space is found.</p>
+<p>Then theme rooms are placed. In this stage, the walls of theme rooms are wooden fencing, which cannot be walked through, but can be seen through. More wooden fencing is involved in two further routines. The first gives wooden cladding to any remaining sections of walls that are long straight segments. The second draws a line of fencing across the map, from one wall to the opposing, then inserts a door. Unlike the cathedral generation, it doesn&#8217;t look for corners to start these walls.</p>
+</div>
+
+
+
+<figure class="wp-block-image"><img src="../../../../wp-content/uploads/2019/07/diablo_caves-1024x462.png" alt="" class="wp-image-382" srcset="../../../../wp-content/uploads/2019/07/diablo_caves-1024x462.png 1024w, ../../../../wp-content/uploads/2019/07/diablo_caves-300x135.png 300w, ../../../../wp-content/uploads/2019/07/diablo_caves-768x347.png 768w, ../../../../wp-content/uploads/2019/07/diablo_caves.png 1181w" sizes="(max-width: 1024px) 100vw, 1024px" /><figcaption>The map for a typical Cave level</figcaption></figure>
+
+
+
+<div class="wp-block-jetpack-markdown"><h1>Hell</h1>
+<p>Hell is the final stage of Diablo. The focus at this point is really on the monsters and the level design takes a back seat. It has one of the smallest tile sets in the game, and much of that is used for the oversized staircases and pentagrams. Hell levels tends to be a few square rooms and a symmetric layout.</p>
+<h2>Predungeon</h2>
+<p>The generation of Hell starts with a random room of size 5-6 each side (larger if there is a quest set piece), then applies the same recursive budding used in the cathedral. The generation is restricted to a 20&#215;20 area though.</p>
+<p>A vertical and horizontal corridor extending to the edge of the 20&#215;20 area is added.</p>
+<p>Finally, the predungeon is mirrored vertically and horizontally to get to full size.</p>
+<h2>Dungeon</h2>
+<p>The predungeon is converted to tiles by marching squares again. Then walls are added similarly to the cathedral, and theme rooms, like the catacombs and caves.</p>
+<h1>Conclusions</h1>
+<p>I enjoyed reading this code a lot. Though it&#8217;s clearly buggy, the naming conventions are a mess and some things couldn&#8217;t be reconstructed into quality source code, it&#8217;s also clearly very battle tested code, and brimming with clever ideas.</p>
+<p>Here are some of my key take aways:</p>
+<ul>
+<li>The devil is in the detail &#8211; the individual components are not crazy complex, but they combine together to give something that looks great. I imagine the devs just kept plugging away at improving the quality until the levels went from good to amazing. The number of tiles and combinatorial complexity of the tile sets is very high too &#8211; you cannot do that without a lot of attention to how things connect up.</li>
+<li>Pattern matching find-and-replace is very powerful, you can do a wide range of effects with it. It fixes buggy generation, adds variability, inserts pre-authored content, handles erosion, you name it!</li>
+<li>Seperation of dungeon generation into a walkability map (predungeon) and tile generation is also very handy, both for design and debugging.</li>
+<li>If you want to give different areas a different feel, writing a separate algorithm is a great way of doing that. A lot of code can be re-used while still creating a very different overall feel.</li>
+<li>When in doubt, glue more rectangles onto the side of things.</li>
+</ul>
+</div>
+			</div><!-- .entry-content -->
+
+	<footer class="entry-footer">
+				<span class="cat-links">
+			Posted in <a href="https://www.boristhebrave.com/category/uncategorized/" rel="category tag">Uncategorized</a>		</span>
+						<span class="tags-links">
+			<a href="https://www.boristhebrave.com/tag/procgen/" rel="tag">procgen</a>		</span>
+			</footer><!-- .entry-footer -->
+</article><!-- #post-## -->
+
+				<nav class="navigation post-navigation" role="navigation">
+		<h1 class="screen-reader-text">Post navigation</h1>
+		<div class="nav-links">
+			<div class="nav-previous"><a href="https://www.boristhebrave.com/2018/10/06/debroglie-v0-1/" rel="prev"><span class="meta-nav"><</span> DeBroglie v0.1</a></div><div class="nav-next"><a href="https://www.boristhebrave.com/2019/07/28/dungeon-generation-in-enter-the-gungeon/" rel="next">Dungeon Generation in Enter The Gungeon <span class="meta-nav">></span></a></div>		</div><!-- .nav-links -->
+	</nav><!-- .navigation -->
+	
+			
+<div id="comments" class="comments-area">
+
+	
+			<h2 class="comments-title">
+			3 thoughts on &ldquo;<span>Dungeon Generation in Diablo 1</span>&rdquo;		</h2>
+
+		
+		<ol class="comment-list">
+					<li id="comment-12" class="comment even thread-even depth-1">
+			<article id="div-comment-12" class="comment-body">
+				<footer class="comment-meta">
+					<div class="comment-author vcard">
+						<img alt='' src='../../../../../secure.gravatar.com/avatar/d98e6ae8f3adf7553833f4db67b26eee%3Fs=60&amp;d=mm&amp;r=g' srcset='../../../../../secure.gravatar.com/avatar/d98e6ae8f3adf7553833f4db67b26eee%3Fs=120&amp;d=mm&amp;r=gm&#038;r=g 2x' class='avatar avatar-60 photo' height='60' width='60' />						<b class="fn">Jeremiah</b> <span class="says">says:</span>					</div><!-- .comment-author -->
+
+					<div class="comment-metadata">
+						<a href="index.html#comment-12">
+							<time datetime="2019-07-14T21:45:36+00:00">
+								2019-07-14 at 9:45 pm							</time>
+						</a>
+											</div><!-- .comment-metadata -->
+
+									</footer><!-- .comment-meta -->
+
+				<div class="comment-content">
+					<p>Excellent analysis. Thanks for sharing!</p>
+				</div><!-- .comment-content -->
+
+				<div class="reply"><a rel='nofollow' class='comment-reply-link' href='https://www.boristhebrave.com/2019/07/14/dungeon-generation-in-diablo-1/?replytocom=12#respond' data-commentid="12" data-postid="353" data-belowelement="div-comment-12" data-respondelement="respond" aria-label='Reply to Jeremiah'>Reply</a></div>			</article><!-- .comment-body -->
+		</li><!-- #comment-## -->
+		<li id="comment-13" class="comment odd alt thread-odd thread-alt depth-1">
+			<article id="div-comment-13" class="comment-body">
+				<footer class="comment-meta">
+					<div class="comment-author vcard">
+						<img alt='' src='../../../../../secure.gravatar.com/avatar/74b779734d053c012bd78b5fa4719f27%3Fs=60&amp;d=mm&amp;r=g' srcset='../../../../../secure.gravatar.com/avatar/74b779734d053c012bd78b5fa4719f27%3Fs=120&amp;d=mm&amp;r=gm&#038;r=g 2x' class='avatar avatar-60 photo' height='60' width='60' />						<b class="fn">Mark Johnson</b> <span class="says">says:</span>					</div><!-- .comment-author -->
+
+					<div class="comment-metadata">
+						<a href="index.html#comment-13">
+							<time datetime="2019-07-15T00:21:19+00:00">
+								2019-07-15 at 12:21 am							</time>
+						</a>
+											</div><!-- .comment-metadata -->
+
+									</footer><!-- .comment-meta -->
+
+				<div class="comment-content">
+					<p>Now if only Blizzard would read your breakdown to emulate since they&#8217;ve obviously forgotten the secret sauce. Well written.</p>
+				</div><!-- .comment-content -->
+
+				<div class="reply"><a rel='nofollow' class='comment-reply-link' href='https://www.boristhebrave.com/2019/07/14/dungeon-generation-in-diablo-1/?replytocom=13#respond' data-commentid="13" data-postid="353" data-belowelement="div-comment-13" data-respondelement="respond" aria-label='Reply to Mark Johnson'>Reply</a></div>			</article><!-- .comment-body -->
+		</li><!-- #comment-## -->
+		<li id="comment-14" class="comment even thread-even depth-1">
+			<article id="div-comment-14" class="comment-body">
+				<footer class="comment-meta">
+					<div class="comment-author vcard">
+						<img alt='' src='../../../../../secure.gravatar.com/avatar/0c40c36edadb53b5de226e450b772447%3Fs=60&amp;d=mm&amp;r=g' srcset='../../../../../secure.gravatar.com/avatar/0c40c36edadb53b5de226e450b772447%3Fs=120&amp;d=mm&amp;r=gm&#038;r=g 2x' class='avatar avatar-60 photo' height='60' width='60' />						<b class="fn">qugen games</b> <span class="says">says:</span>					</div><!-- .comment-author -->
+
+					<div class="comment-metadata">
+						<a href="index.html#comment-14">
+							<time datetime="2019-07-15T02:39:06+00:00">
+								2019-07-15 at 2:39 am							</time>
+						</a>
+											</div><!-- .comment-metadata -->
+
+									</footer><!-- .comment-meta -->
+
+				<div class="comment-content">
+					<p>Awesome</p>
+				</div><!-- .comment-content -->
+
+				<div class="reply"><a rel='nofollow' class='comment-reply-link' href='https://www.boristhebrave.com/2019/07/14/dungeon-generation-in-diablo-1/?replytocom=14#respond' data-commentid="14" data-postid="353" data-belowelement="div-comment-14" data-respondelement="respond" aria-label='Reply to qugen games'>Reply</a></div>			</article><!-- .comment-body -->
+		</li><!-- #comment-## -->
+		</ol><!-- .comment-list -->
+
+		
+	
+	
+	
+		<div id="respond" class="comment-respond">
+							<h3 id="reply-title" class="comment-reply-title">Leave a Reply					<small><a rel="nofollow" id="cancel-comment-reply-link" href="index.html#respond" style="display:none;">Cancel reply</a></small>
+				</h3>
+						<form id="commentform" class="comment-form">
+				<iframe title="Comment Form" src="https://jetpack.wordpress.com/jetpack-comment/?blogid=128609145&#038;postid=353&#038;comment_registration=0&#038;require_name_email=1&#038;stc_enabled=1&#038;stb_enabled=1&#038;show_avatars=1&#038;avatar_default=mystery&#038;greeting=Leave+a+Reply&#038;greeting_reply=Leave+a+Reply+to+%25s&#038;color_scheme=light&#038;lang=en_GB&#038;jetpack_version=7.5.2&#038;show_cookie_consent=10&#038;has_cookie_consent=0&#038;token_key=%3Bnormal%3B&#038;sig=7672f35ea2844426a3c172b405f4731a782d9d3b#parent=https%3A%2F%2Fwww.boristhebrave.com%2F2019%2F07%2F14%2Fdungeon-generation-in-diablo-1%2F" style="width:100%; height: 430px; border:0;" name="jetpack_remote_comment" class="jetpack_remote_comment" id="jetpack_remote_comment" sandbox="allow-same-origin allow-top-navigation allow-scripts allow-forms allow-popups"></iframe>
+									<!--[if !IE]><!-->
+					<script>
+						document.addEventListener('DOMContentLoaded', function () {
+							var commentForms = document.getElementsByClassName('jetpack_remote_comment');
+							for (var i = 0; i < commentForms.length; i++) {
+								commentForms[i].allowTransparency = false;
+								commentForms[i].scrolling = 'no';
+							}
+						});
+					</script>
+					<!--<![endif]-->
+							</form>
+		</div>
+
+		
+		<input type="hidden" name="comment_parent" id="comment_parent" value="" />
+
+		
+</div><!-- #comments -->
+
+		
+		</main><!-- #main -->
+	</div><!-- #primary -->
+
+	<div id="secondary" class="widget-area" role="complementary">
+		<aside id="search-2" class="widget widget_search"><form role="search" method="get" class="search-form" action="https://www.boristhebrave.com/">
+				<label>
+					<span class="screen-reader-text">Search for:</span>
+					<input type="search" class="search-field" placeholder="Search &hellip;" value="" name="s" />
+				</label>
+				<input type="submit" class="search-submit" value="Search" />
+			</form></aside>		<aside id="recent-posts-2" class="widget widget_recent_entries">		<h1 class="widget-title">Recent Posts</h1>		<ul>
+											<li>
+					<a href="https://www.boristhebrave.com/2019/07/28/dungeon-generation-in-enter-the-gungeon/">Dungeon Generation in Enter The Gungeon</a>
+									</li>
+											<li>
+					<a href="index.html">Dungeon Generation in Diablo 1</a>
+									</li>
+											<li>
+					<a href="https://www.boristhebrave.com/2018/10/06/debroglie-v0-1/">DeBroglie v0.1</a>
+									</li>
+											<li>
+					<a href="https://www.boristhebrave.com/2018/05/12/barycentric-perlin-noise/">Barycentric Perlin Noise</a>
+									</li>
+											<li>
+					<a href="https://www.boristhebrave.com/2018/04/28/random-paths-via-chiseling/">Random Paths via Chiseling</a>
+									</li>
+					</ul>
+		</aside><aside id="archives-2" class="widget widget_archive"><h1 class="widget-title">Archives</h1>		<ul>
+				<li><a href='https://www.boristhebrave.com/2019/07/'>July 2019</a></li>
+	<li><a href='https://www.boristhebrave.com/2018/10/'>October 2018</a></li>
+	<li><a href='https://www.boristhebrave.com/2018/05/'>May 2018</a></li>
+	<li><a href='https://www.boristhebrave.com/2018/04/'>April 2018</a></li>
+	<li><a href='https://www.boristhebrave.com/2018/01/'>January 2018</a></li>
+	<li><a href='https://www.boristhebrave.com/2017/07/'>July 2017</a></li>
+	<li><a href='https://www.boristhebrave.com/2017/05/'>May 2017</a></li>
+	<li><a href='https://www.boristhebrave.com/2015/09/'>September 2015</a></li>
+	<li><a href='https://www.boristhebrave.com/2014/05/'>May 2014</a></li>
+	<li><a href='https://www.boristhebrave.com/2013/07/'>July 2013</a></li>
+	<li><a href='https://www.boristhebrave.com/2011/02/'>February 2011</a></li>
+	<li><a href='https://www.boristhebrave.com/2010/05/'>May 2010</a></li>
+	<li><a href='https://www.boristhebrave.com/2010/01/'>January 2010</a></li>
+	<li><a href='https://www.boristhebrave.com/2009/10/'>October 2009</a></li>
+	<li><a href='https://www.boristhebrave.com/2009/09/'>September 2009</a></li>
+	<li><a href='https://www.boristhebrave.com/2009/08/'>August 2009</a></li>
+	<li><a href='https://www.boristhebrave.com/2009/03/'>March 2009</a></li>
+	<li><a href='https://www.boristhebrave.com/2009/02/'>February 2009</a></li>
+	<li><a href='https://www.boristhebrave.com/2009/01/'>January 2009</a></li>
+	<li><a href='https://www.boristhebrave.com/2008/09/'>September 2008</a></li>
+		</ul>
+			</aside><!--
+Plugin: Custom Meta Widget
+Plugin URL: http://shinraholdings.com/plugins/custom-meta-widget/
+-->
+<aside id="custommetawidget-3" class="widget customMetaWidget"><h1 class="widget-title">Meta</h1>		<ul>
+
+		
+		
+					<li><a href="https://www.boristhebrave.com/feed/">Entries <abbr title="Really Simple Syndication">RSS</abbr></a></li>
+		
+
+		
+			<li><a href="https://www.boristhebrave.com/comments/feed/">Comments <abbr title="Really Simple Syndication">RSS</abbr></a></li>
+		
+				</ul>
+
+	</aside>	</div><!-- #secondary -->
+
+	</div><!-- #content -->
+
+	<footer id="colophon" class="site-footer" role="contentinfo">
+				<div class="site-info">
+			<a href="http://wordpress.org/">Proudly powered by WordPress</a>
+			<span class="sep"> | </span>
+			Theme: Sketch by <a href="https://wordpress.com/themes/" rel="designer">WordPress.com</a>.		</div><!-- .site-info -->
+	</footer><!-- #colophon -->
+</div><!-- #page -->
+
+	<div style="display:none">
+	<div class="grofile-hash-map-d98e6ae8f3adf7553833f4db67b26eee">
+	</div>
+	<div class="grofile-hash-map-74b779734d053c012bd78b5fa4719f27">
+	</div>
+	<div class="grofile-hash-map-0c40c36edadb53b5de226e450b772447">
+	</div>
+	</div>
+<link rel='stylesheet' id='hljstheme-css'  href='../../../../../cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css%3Fver=0.6.2.css' type='text/css' media='all' />
+<script type='text/javascript' src='../../../../../s0.wp.com/wp-content/js/devicepx-jetpack.js%3Fver=201937'></script>
+<script type='text/javascript' src='../../../../../secure.gravatar.com/js/gprofiles.js%3Fver=2019Sepaa'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var WPGroHo = {"my_hash":""};
+/* ]]> */
+</script>
+<script type='text/javascript' src='../../../../wp-content/plugins/jetpack/modules/wpgroho.js%3Fver=5.2.3'></script>
+<script type='text/javascript' src='../../../../wp-content/themes/sketch/js/navigation.js%3Fver=20120206'></script>
+<script type='text/javascript' src='../../../../wp-content/themes/sketch/js/skip-link-focus-fix.js%3Fver=20130115'></script>
+<script type='text/javascript' src='../../../../wp-includes/js/comment-reply.min.js%3Fver=5.2.3'></script>
+<script type='text/javascript' src='../../../../wp-includes/js/wp-embed.min.js%3Fver=5.2.3'></script>
+<script type='text/javascript' src='../../../../../cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js%3Fver=0.6.2'></script>
+<script async="async" type='text/javascript' src='../../../../wp-content/plugins/akismet/_inc/form.js%3Fver=4.1.2'></script>
+    <style>pre.hljs {padding: 5px;}
+pre.hljs code {}</style>
+    <script type="text/javascript">
+    (function($, window) {
+        var init_fn_flag = false;
+        var init_fn = (function() {
+            if (init_fn_flag)
+                return;
+            init_fn_flag = true;
+             hljs.configure({"tabReplace":"    "});
+            $('pre code').each(function(i, block) {
+                hljs.highlightBlock(block);
+            });
+        });
+        $(document).ready(init_fn);
+        $(window).on("load", init_fn);
+    })(jQuery, window);
+    </script>
+
+		<!--[if IE]>
+		<script type="text/javascript">
+			if ( 0 === window.location.hash.indexOf( '#comment-' ) ) {
+				// window.location.reload() doesn't respect the Hash in IE
+				window.location.hash = window.location.hash;
+			}
+		</script>
+		<![endif]-->
+		<script type="text/javascript">
+			(function () {
+				var comm_par_el = document.getElementById( 'comment_parent' ),
+					comm_par = ( comm_par_el && comm_par_el.value ) ? comm_par_el.value : '',
+					frame = document.getElementById( 'jetpack_remote_comment' ),
+					tellFrameNewParent;
+
+				tellFrameNewParent = function () {
+					if ( comm_par ) {
+						frame.src = "https://jetpack.wordpress.com/jetpack-comment/?blogid=128609145&postid=353&comment_registration=0&require_name_email=1&stc_enabled=1&stb_enabled=1&show_avatars=1&avatar_default=mystery&greeting=Leave+a+Reply&greeting_reply=Leave+a+Reply+to+%25s&color_scheme=light&lang=en_GB&jetpack_version=7.5.2&show_cookie_consent=10&has_cookie_consent=0&token_key=%3Bnormal%3B&sig=7672f35ea2844426a3c172b405f4731a782d9d3b#parent=https%3A%2F%2Fwww.boristhebrave.com%2F2019%2F07%2F14%2Fdungeon-generation-in-diablo-1%2F" + '&replytocom=' + parseInt( comm_par, 10 ).toString();
+					} else {
+						frame.src = "https://jetpack.wordpress.com/jetpack-comment/?blogid=128609145&postid=353&comment_registration=0&require_name_email=1&stc_enabled=1&stb_enabled=1&show_avatars=1&avatar_default=mystery&greeting=Leave+a+Reply&greeting_reply=Leave+a+Reply+to+%25s&color_scheme=light&lang=en_GB&jetpack_version=7.5.2&show_cookie_consent=10&has_cookie_consent=0&token_key=%3Bnormal%3B&sig=7672f35ea2844426a3c172b405f4731a782d9d3b#parent=https%3A%2F%2Fwww.boristhebrave.com%2F2019%2F07%2F14%2Fdungeon-generation-in-diablo-1%2F";
+					}
+				};
+
+				
+				if ( 'undefined' !== typeof addComment ) {
+					addComment._Jetpack_moveForm = addComment.moveForm;
+
+					addComment.moveForm = function ( commId, parentId, respondId, postId ) {
+						var returnValue = addComment._Jetpack_moveForm( commId, parentId, respondId, postId ),
+							cancelClick, cancel;
+
+						if ( false === returnValue ) {
+							cancel = document.getElementById( 'cancel-comment-reply-link' );
+							cancelClick = cancel.onclick;
+							cancel.onclick = function () {
+								var cancelReturn = cancelClick.call( this );
+								if ( false !== cancelReturn ) {
+									return cancelReturn;
+								}
+
+								if ( ! comm_par ) {
+									return cancelReturn;
+								}
+
+								comm_par = 0;
+
+								tellFrameNewParent();
+
+								return cancelReturn;
+							};
+						}
+
+						if ( comm_par == parentId ) {
+							return returnValue;
+						}
+
+						comm_par = parentId;
+
+						tellFrameNewParent();
+
+						return returnValue;
+					};
+				}
+
+				
+				// Do the post message bit after the dom has loaded.
+				document.addEventListener( 'DOMContentLoaded', function () {
+					var iframe_url = "https:\/\/jetpack.wordpress.com";
+					if ( window.postMessage ) {
+						if ( document.addEventListener ) {
+							window.addEventListener( 'message', function ( event ) {
+								var origin = event.origin.replace( /^http:\/\//i, 'https://' );
+								if ( iframe_url.replace( /^http:\/\//i, 'https://' ) !== origin ) {
+									return;
+								}
+								jQuery( frame ).height( event.data );
+							});
+						} else if ( document.attachEvent ) {
+							window.attachEvent( 'message', function ( event ) {
+								var origin = event.origin.replace( /^http:\/\//i, 'https://' );
+								if ( iframe_url.replace( /^http:\/\//i, 'https://' ) !== origin ) {
+									return;
+								}
+								jQuery( frame ).height( event.data );
+							});
+						}
+					}
+				})
+
+			})();
+		</script>
+
+		<script type='text/javascript' src='https://stats.wp.com/e-201937.js' async='async' defer='defer'></script>
+<script type='text/javascript'>
+	_stq = window._stq || [];
+	_stq.push([ 'view', {v:'ext',j:'1:7.5.2',blog:'128609145',post:'353',tz:'0',srv:'www.boristhebrave.com'} ]);
+	_stq.push([ 'clickTrackerInit', '128609145', '353' ]);
+</script>
+
+</body>
+</html>
+
+<!-- Dynamic page generated in 1.889 seconds. -->
+<!-- Cached page generated by WP-Super-Cache on 2019-09-14 23:33:52 -->
+
+<!-- Compression = gzip -->
+<!-- super cache -->

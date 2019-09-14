@@ -1,0 +1,5 @@
+Sitemap: https://www.boristhebrave.com/sitemap.xml
+Sitemap: https://www.boristhebrave.com/news-sitemap.xml
+User-agent: *
+Disallow: /wp-admin/
+Allow: /wp-admin/admin-ajax.php
