@@ -12,8 +12,8 @@
     - quests: mostly handles by set pieces, sometimes with minisets and theme rooms.
 
 * [Squares Made for Marching](http://blog.project-retrograde.com/2013/05/marching-squares/)
-	- [Tileset](../_archive_/blog.project-retrograde.com/2013/05/marching-squares/79874ba2be2bccdd5c1a1ddf8063a4a93e2891ff.png)
-	- [Tiles](../_archive_/blog.project-retrograde.com/2013/05/marching-squares/c8db682a9a47de6e95f6fd23a91d477554229e25.png)
+	- ![Tileset](../_archive_/blog.project-retrograde.com/2013/05/marching-squares/79874ba2be2bccdd5c1a1ddf8063a4a93e2891ff.png)
+	- ![Tiles](../_archive_/blog.project-retrograde.com/2013/05/marching-squares/c8db682a9a47de6e95f6fd23a91d477554229e25.png)
 
 * [Metaballs and Marching Squares](http://jamie-wong.com/2014/08/19/metaballs-and-marching-squares/)
-	- [Squares Mapping](../_archive_/http://jamie-wong.com/images/14-08-11/marching-squares-mapping.png)
+	- ![Squares Mapping](../_archive_/jamie-wong.com/images/14-08-11/marching-squares-mapping.png)
